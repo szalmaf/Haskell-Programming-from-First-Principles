@@ -12,6 +12,10 @@ myWords x = takeWhile (/= ' ') x :
        dropWhile (/= ' ') 
        $ x)
 
+myWords s = head : myWords tale
+  where head = takeWhile (/=' ') s
+        tail = drop 1 $ dropWhile (/= ' ') s
+
 2)
 -- Break up String at the '\n' character
 
