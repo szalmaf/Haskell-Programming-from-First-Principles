@@ -12,9 +12,10 @@ myWords x = takeWhile (/= ' ') x :
        dropWhile (/= ' ') 
        $ x)
 
-myWords s = head : myWords tale
+myWords "" = []; 
+myWords s = head : myWords tail
   where head = takeWhile (/=' ') s
-        tail = drop 1 $ dropWhile (/= ' ') s
+        tail = dropWhile (== ' ') $ dropWhile (/= ' ') s
 
 2)
 -- Break up String at the '\n' character
@@ -35,3 +36,14 @@ myLines ch x = takeWhile (/=ch) x :
                	dropWhile (==ch) . 
                	dropWhile (/=ch) 
                	$ x)
+
+
+xs = words "the brown dog was a goof"
+[x | x <- xs, not (elem x ["the", "a"])]
+filter (\x -> not (elem x ["the", "a"])) xs
+
+
+
+
+
+
