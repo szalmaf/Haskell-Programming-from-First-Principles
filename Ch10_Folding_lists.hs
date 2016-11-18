@@ -14,31 +14,31 @@ sum [] = 0 -- Base case
 sum (x:xs) = x + sum xs -- Recursion
 
 length :: [a] -> Integer
-length [] = 0
-length (_:xs) = 1 + length xs
+length [] = 0 -- Base case
+length (_:xs) = 1 + length xs -- Recursion
 
 concat :: [[a]] -> [a]
-concat [] = []
-concat (x:xs) = x ++ concat xs
+concat [] = [] -- Base case
+concat (x:xs) = x ++ concat xs -- Recursion
 
 
 -- 10.4 Fold right
 
 foldr :: (a -> b -> b) -> b -> [a] -> b
-foldr f acc [] = acc
-foldr f acc (x:xs) = f x (foldr f acc xs)
+foldr f acc [] = acc -- Base case
+foldr f acc (x:xs) = f x (foldr f acc xs) -- Recursion
 
 foldr f acc xs =
     case xs of
-        []     -> acc
-        (x:xs) -> f x (foldr f acc xs)
+        []     -> acc -- Base case
+        (x:xs) -> f x (foldr f acc xs) -- Recursion
 
 
 -- 10.5 Fold left
 
 foldl :: (b -> a -> b) -> b -> [a] -> b
-foldl f acc [] = acc
-foldl f acc (x:xs) = foldl f (f acc x) xs
+foldl f acc [] = acc -- Base case
+foldl f acc (x:xs) = foldl f (f acc x) xs -- Recursion
 
 -- Show parantheses, left and right associations 
 f = (\x y -> concat ["(",x,"+",y,")"])
