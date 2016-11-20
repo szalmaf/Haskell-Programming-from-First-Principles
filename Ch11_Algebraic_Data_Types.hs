@@ -103,16 +103,52 @@ data Airline =
       deriving (Eq, Show)
 
 -- type w 2 possible values
--- and dataconstructors taking arguments 
+-- and dataconstructors taking two and one arguments 
 data Vehicle = Car Manufacturer Price
              | Plane Airline
              deriving (Eq, Show)
 
 -- Intermission exercises
 
-myCar = Car Mini (Price 14000)
 myCar :: Vehicle
+myCar = Car Mini (Price 14000)
 
+-- Pattern matching to check type
 isCar :: Vehicle -> Bool
 isCar (Car _ _) = True
 isCar _ = False
+
+isPlane :: Vehicle -> Bool
+isPlane (Plane _) -> True
+isPlane _ = False
+
+areCars :: [Vehicle] -> [Bool]
+areCars [(Car _ _)] = ???
+
+getManu :: Vehicle -> Manufacturer
+getManu (Car x) = x
+getManu _ = ???
+
+data Vehicle = Car Manufacturer Price
+             | Plane Airline (Size :: Integer)
+             deriving (Eq, Show)
+
+-- 10.6 Data constructor arities
+
+-- nullary
+data Example0 =
+    Example0 deriving (Eq, Show)
+
+-- unary
+data Example1 =
+    Example1 = Int deriving (Eq, Show)
+
+-- product of Int String
+data Example2 =
+    Example2 Int String deriving (Eq, Show)
+
+Example1 10 == Example1 11 -- False
+Example2 10 "FlappityBat" == Example2 1 "NC" -- False
+
+
+
