@@ -133,7 +133,7 @@ data Vehicle = Car Manufacturer Price
              | Plane Airline (Size :: Integer)
              deriving (Eq, Show)
 
--- 10.6 Data constructor arities
+-- 11.6 Data constructor arities
 
 -- nullary
 data Example0 =
@@ -143,7 +143,8 @@ data Example0 =
 data Example1 =
     Example1 = Int deriving (Eq, Show)
 
--- product of Int String
+-- product of Int and String
+-- tuple or anonymous product
 data Example2 =
     Example2 Int String deriving (Eq, Show)
 
@@ -151,4 +152,49 @@ Example1 10 == Example1 11 -- False
 Example2 10 "FlappityBat" == Example2 1 "NC" -- False
 
 
+-- 11.7 What makes these datatypes algebraic
 
+-- cardinality of datatypes
+
+-- Simple datatypes with nullary constructor
+data Example = MakeExample deriving Show
+-- cardinality 1
+
+-- Unary constructors
+data Goats = Goats Int deriving (Eq, Show)
+
+-- newtype
+-- define a typeclass and its instance for Int
+class TooMany a where 
+    tooMany :: a -> Bool
+instance TooMany Int where 
+    tooMany n = n > 42
+tooMany  (42 :: Int)
+
+newtype Goats = Goats Int deriving Show
+instance TooMany Goats where
+    tooMany (Goats n) = n > 43
+
+---------- Use language *pragma* ----
+-- no need to define instance of TooMany for Goats due to pragma
+{-# LANGUAGE  GeneralizeNewtypeDeriving #-} -- at top of file
+class TooMany a where 
+    tooMany :: a -> Bool
+instance TooMany Int where 
+    tooMany n = n > 42
+newtype Goats =
+    Goats Int deriving (Eq, Show, TooMany)  
+
+-- Intermission exercises
+1 . 
+{-# LANGUAGE  FlexibleInstances #-} -- at top of file
+instance TooMany (Int, String) where
+    tooMany (i, s) = i > 42
+
+2.
+instance tooMany (Int, Int) where
+    tooMany (i1, i2) = tooMany (i1 + i2)
+
+3.
+instance tooMany (Num a, TooMany a)
+    => (a, a) ?????
