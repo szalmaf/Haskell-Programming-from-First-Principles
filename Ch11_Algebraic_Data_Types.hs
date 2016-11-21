@@ -198,3 +198,72 @@ instance tooMany (Int, Int) where
 3.
 instance tooMany (Num a, TooMany a)
     => (a, a) ?????
+
+-- 11.8 Sum types
+
+data BigSmall =
+      Big Bool
+    | Small Bool
+    deriving (Eq, Show)
+-- cardiality is 2 + 2 = 4
+
+import Data.Int
+data NumberOrBool =
+      Numba Int8
+    | BoolyBool Bool
+    deriving (Eq, Show)
+let myNumba = Numba (-128)
+-- cardinality is 256 + 2 = 258
+
+-- 11.9 Product types
+
+-- tuples are anonymous product types
+-- Records
+data Person = 
+    Person { name :: String
+           , age :: Int } 
+           deriving (Eq, Show)
+let papu = Person "Papu" 5
+age papu
+name papu
+
+--Intermission exercises
+
+-- 2. 4.
+data Fruit =
+      Peach
+    | Plum
+    | Apple
+    | Blackberry
+    deriving (Ord, Eq, Show)
+data JamJars =
+    Jam { fruit :: Fruit
+        , count :: Int } 
+        deriving (Ord, Eq, Show)
+
+-- 5.
+row1 = JamJars Peach 4
+row2 = JamJars Apple 15
+row3 = JamJars Plum 6
+alljam = [row1, row2, row3]
+
+-- 6.
+totalJam x = sum (map count x) -- count total number of jars
+
+-- 7.
+maxCnt x y = if count x > count y then x else y
+pickMax (x:xs) = foldr maxCnt x xs
+
+-- 8.
+:i sortBy
+sortBy :: (a -> a -> Ordering) -> [a] -> [a]
+
+:i groupBy
+groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
+
+-- 9.
+compareKind (JamJars k _) (JamJars k' _) = compare k k'
+sortBy compareKind  alljam
+
+-- 10.
+groupBy (\x y -> (fruit x) == (fruit y)) alljam
