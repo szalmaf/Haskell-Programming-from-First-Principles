@@ -58,27 +58,35 @@ Doggies :: * -> * -- type needs to be applied to become concrete
 Husky :: a -> Doggies a
 
 -- Intermission exercises
+
+-- 3.
 :k Doggies String
 Doggies String :: *
 
+-- 4.
 :t Husky 10
 Husky 10 :: Num a => Doggies a
 
+-- 5.
 Husky (10 :: Integer)
 Husky 10
 
 :t Husky (10 :: Integer)
 Husky (10 :: Integer) :: Doggies Integer
 
+-- 6.
 :t Mastiff "Scooby Doo"
 Mastiff "Scooby Doo" :: Doggies [Char]
 
+-- 7.
 :t DogueDeBordeaux
 DogueDeBordeaux :: doge -> DogueDeBordeaux doge
 
+-- 8.
 :t DogueDeBordeaux  "doggie!"
 DogueDeBordeaux  "doggie!" :: DogueDeBordeaux [Char]
 
+-- 9.
 :k DogueDeBordeaux
 DogueDeBordeaux :: * -> *
 
@@ -192,12 +200,14 @@ instance TooMany (Int, String) where
     tooMany (i, s) = i > 42
 
 2.
-instance tooMany (Int, Int) where
+instance TooMany (Int, Int) where
     tooMany (i1, i2) = tooMany (i1 + i2)
 
 3.
-instance tooMany (Num a, TooMany a)
-    => (a, a) ?????
+-- a has Num and TooMany constrains
+-- (a, a) is the input of this TooMany instance
+instance TooMany (Num a, TooMany a) => (a, a) where -- a has Num and TooMany constrains
+    tooMany(n, x) = tooMany (n + x)
 
 -- 11.8 Sum types
 
@@ -267,3 +277,21 @@ sortBy compareKind  alljam
 
 -- 10.
 groupBy (\x y -> (fruit x) == (fruit y)) alljam
+
+
+-- 11.10 Normal form
+
+data Fiction = Fiction deriving Show
+data Nonfiction = Nonfiction deriving Show
+data BookType =   FictionBook Fiction 
+                | NonfictionBook Nonfiction 
+                deriving Show
+
+type AuthorName = String
+data Author  = Author (AuthorName, BookType)
+
+-- 
+data Author = 
+      Fiction AuthorName
+    | Nonfiction AuthorName
+    deriving (Eq, Show)
