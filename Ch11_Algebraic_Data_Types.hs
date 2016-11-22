@@ -286,12 +286,76 @@ data Nonfiction = Nonfiction deriving Show
 data BookType =   FictionBook Fiction 
                 | NonfictionBook Nonfiction 
                 deriving Show
-
 type AuthorName = String
 data Author  = Author (AuthorName, BookType)
-
--- 
+--  Fiction, Nonfiction are different below from above
 data Author = 
       Fiction AuthorName
     | Nonfiction AuthorName
     deriving (Eq, Show)
+
+-- Strict interpretation of normal form
+type Number = Int
+type Add = (Expr Expr)
+type Minus = Expr
+type Mult = (Expr Expr)
+type Divide = (Expr Expr)
+type Expr =
+    Either Number
+      (Either Add
+        (Either Minus
+          (Either Mult Divide)))
+
+data FlowerType = Gardenia
+                | Daisy
+                | Rose
+                | Lilac
+                deriving Show
+type Gardener = String
+data Garden =
+    Garden Gardener FlowerType
+    deriving Show
+-- the above Garden in normal form:
+data Garden = Gardenia Gardener
+            | Daisy Gardener
+            | Rose Gardener
+            | Lilac Gardener
+            deriving Show
+
+-- 11.11 Constructing and deconstructing values
+
+
+
+-- 11.13 Higher-kinded datatypes
+
+-- a product type which is a product of four types
+data Silly a b c d = MkSilly a b c d deriving Show
+:kind Silly
+Silly :: * -> * -> * -> * -> *
+:kind Silly Int
+Silly Int :: * -> * -> * -> *
+-- or same as Silly expressed as a tuple
+:kind (,,,)
+(,,,) * -> * -> * -> * -> *
+:kind :: (Int, String, Bool, String)
+(Int, String, Bool, String) :: *
+
+
+-- 11.14 Lists are polymorphic
+
+
+-- 11.15 Binary Tree
+
+-- recursive data structure as Lists
+data BinaryTree a =
+      Leaf
+    | Node (BinaryTree a) a (BinaryTree a)
+    deriving (Eq, Ord, Show)
+
+insert' :: Ord a => a -> BinaryTree a -> BinaryTree a
+insert' b Leaf = Node Leaf b Leaf
+insert' b (Node left a right) 
+    | b == a = Node left a right 
+    | b < a  = Node (insert' b left) a right 
+    | b > a  = Node left a (insert' b right)
+t1 = insert' 1 Leaf
