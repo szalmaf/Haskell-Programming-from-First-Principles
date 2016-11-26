@@ -322,8 +322,75 @@ data Garden = Gardenia Gardener
             | Lilac Gardener
             deriving Show
 
+
 -- 11.11 Constructing and deconstructing values
 
+data GuessWhat =
+    chickenbutt deriving (Eq, Show)
+
+data Id a =
+    MkId a deriving (Eq, Show)
+
+data Product a b =
+    Product a b deriving (Eq, Show)
+
+data Sum a b =
+      First a
+    | Second b
+    deriving (Eq, Show)
+
+data RecordProduct a b =
+    RecordProduct { pfirst :: a 
+                  , psecond :: b }
+                  deriving (Eq, Show) 
+
+newtype numCow =
+    NumCow Int
+    deriving (Eq, Show)
+
+newtype NumPig =
+    NumPig Int
+    deriving (Eq, Show)
+
+data Farmhouse =
+    Farmhouse NumCow NumPig
+    deriving (Eq, Show)
+
+type Farmhouse' = Product NumCow NumPig
+
+newtype NumSheep =
+    NumSheep Int
+    deriving (Eq, Show)
+
+data BigFarmhouse =
+    BigFarmhouse NumCow NumPig NumSheep
+    deriving (Eq, Show)
+
+type BigFarmhouse' =
+    Product NumCow (Product NumPig NumSheep)
+
+type Name = String
+type Age = Int
+type LovesMud = Bool
+
+type PoundsOfWool = Int
+
+data CowInfo = 
+    CowInfo Name Age LovesMud
+    deriving (Eq, Show)
+
+data SheepInfo =
+    SheepInfo Name Age PoundsOfWool
+    deriving (Eq, Show)
+
+data Animal = 
+      Cow CowInfo
+    | Pig PigInfo
+    | Sheep SheepInfo
+    deriving (Eq, Show)
+
+type Animal' =
+    Sum CowInfo (Sum PigInfo SheepInfo)
 
 
 -- 11.13 Higher-kinded datatypes
@@ -359,3 +426,31 @@ insert' b (Node left a right)
     | b < a  = Node (insert' b left) a right 
     | b > a  = Node left a (insert' b right)
 t1 = insert' 1 Leaf
+
+
+-- 11.16 Chapter exercises
+
+1.
+data Weekday =
+      Monday
+    | Tuesday
+    | Wednesday
+    | Thursday
+    | Friday
+-- a) Yes, Weekday is type with 5 data constructors
+-- b) It is not really a Tree
+-- c) Weekday is not a product type, it is a sum type
+-- d) Weekday takes zero arguments, not five
+
+2.
+f Friday = "Miller Time"
+-- c) f :: Weekday -> [Char] type
+
+3.
+-- Types defined with the data keyword
+-- a) do not need to have at least one argument, they can have zero
+-- b) yes, must begin with a capital letter
+-- c) no, they don't need to be polymorphic
+-- d) they *can* be imported form modules
+
+4.

@@ -11,6 +11,8 @@ insert' b (Node left a right)
     | b == a = Node left a right 
     | b < a  = Node (insert' b left) a right 
     | b > a  = Node left a (insert' b right)
+
+-- Create a small tree
 t1 = insert' 1 Leaf
 t2 = insert' 3 t1
 t3 = insert' 5 t2
