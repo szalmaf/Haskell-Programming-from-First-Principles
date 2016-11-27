@@ -25,5 +25,14 @@ myUser = (Username "Callen")
 myAcct =  (AccountNumber 10456)
 --printUser $ RegisteredUser myUser myAcct
 
+--Pattern matching on tuples
+f :: (a,b) -> (c,d) -> ((b,d), (a,c))
+f (a,b) (c,d) = ((b,d), (a,c))
+
+addEmUp2 :: Num a => (a,a) -> a
+addEmUp2 (x, y) = x + y
+
+fst3 :: (a,b,c) -> a
+fst3 (x,_,_) = x
 
 
