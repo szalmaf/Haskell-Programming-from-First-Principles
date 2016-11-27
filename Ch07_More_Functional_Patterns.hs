@@ -36,3 +36,19 @@ fst3 :: (a,b,c) -> a
 fst3 (x,_,_) = x
 
 
+-- 7.5 Case expressions
+
+-- return "yes" of "no"
+palin xs =
+    case y of
+        True  -> "yes"
+        False -> "no"
+    where y = xs == reverse xs
+
+-- return printed message:
+greetIfCool :: String -> IO()
+greetIfCool coolness = 
+    case cool of
+        True  -> putStrLn "eyyyy..."
+        False -> putStrLn "pshhhh"
+    where cool = coolness == "downright"
