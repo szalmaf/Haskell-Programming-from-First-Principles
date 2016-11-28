@@ -53,6 +53,7 @@ greetIfCool coolness =
         False -> putStrLn "pshhhh"
     where cool = coolness == "downright"
 
+
 -- 7.6 Higher order functions
 
 data Employee = Coder
@@ -86,4 +87,18 @@ codersRuleCEOsDrool _ Coder     = LT
 --employeeRank' compare Coder CEO
 --employeeRank' codersRuleCEOsDrool Coder CEO
 
+
+-- 7.7 Guards
+
+bloodNa :: Integer -> String
+bloodNa x
+    | x < 135   = "too low"
+    | x > 145   = "too high"
+    | otherwise = "just right"
+
+isRight :: (Num a, Eq a) => a -> a -> a -> String
+isRight a b c
+    | a^2 + b^2 == c^2 = "RIGHT ON"
+    | otherwise        = "not right"
+    
 
