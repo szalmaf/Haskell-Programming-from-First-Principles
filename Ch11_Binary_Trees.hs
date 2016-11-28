@@ -55,4 +55,18 @@ testPostorder =
     then putStrLn "Postorder fine!"
     else putStrLn "postorder failed check"
 
+-- foldTree
+foldTree :: (a -> b -> b) -> b -> BinaryTree a -> b
+foldTree f x bt =
+    foldr f x lst
+    where
+        lst = inorder bt
+
+-- mapTree based on foldTree
+-- mapTree' :: (a -> b)
+--         -> BinaryTree a
+--         -> BinaryTree b
+-- mapTree' f bt =
+--     foldTree z z z 
+
 
