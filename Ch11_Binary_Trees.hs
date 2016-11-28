@@ -25,5 +25,34 @@ mapTree f (Node left a right) = -- Recursive case
 mappedt3 = mapTree (\x -> 2 * x) t3
 
 -- Convert binary trees to lists
-preorder :: BinaryTree a -> [a]
-preorder = 
+-- preorder :: BinaryTree a -> [a]
+preorder bt = 
+    case bt of
+        Leaf           -> []
+        Node btl v btr -> [v] ++ preorder btl ++ preorder btr
+inorder bt = 
+    case bt of
+        Leaf           -> []
+        Node btl v btr -> inorder btl ++ [v] ++ inorder btr
+postorder bt = 
+    case bt of
+        Leaf           -> []
+        Node btl v btr -> postorder btl ++ postorder btr ++ [v]
+testTree = Node (Node Leaf 1 Leaf) 2 (Node Leaf 3 Leaf)
+testPreoder :: IO()
+testPreoder =
+    if preorder testTree == [2,1,3]
+    then putStrLn "Preorder fine!"
+    else putStrLn "Bad news bears."
+testInorder :: IO()
+testInorder =
+    if inorder testTree == [1,2,3]
+    then putStrLn "Inorder fine!"
+    else putStrLn "Bad news bears."
+testPostorder :: IO()
+testPostorder =
+    if postorder testTree == [1,3,2]
+    then putStrLn "Postorder fine!"
+    else putStrLn "postorder failed check"
+
+
