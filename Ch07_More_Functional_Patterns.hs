@@ -52,3 +52,38 @@ greetIfCool coolness =
         True  -> putStrLn "eyyyy..."
         False -> putStrLn "pshhhh"
     where cool = coolness == "downright"
+
+-- 7.6 Higher order functions
+
+data Employee = Coder
+              | Manager
+              | Veep
+              | CEO
+              deriving (Eq, Ord, Show)
+reportBoss :: Employee -> Employee -> IO()
+reportBoss e e' =
+    putStrLn $ show e ++ " is the boss of " ++ show e'
+employeeRank :: Employee -> Employee -> IO()
+employeeRank e e' =
+    case compare e e' of
+        GT -> reportBoss e e'
+        EQ -> putStrLn "Neither employee is the boss"
+        LT -> (flip reportBoss) e e'
+-- extend employeeRank function with a compare fn
+-- so that employeeRank becomes a higher order fn
+employeeRank' f e e' =
+    case f e e' of
+        GT -> reportBoss e e'
+        EQ -> putStrLn "Neither employee is the boss"
+        LT -> (flip reportBoss) e e'
+-- define a custom f compare fn to make Coders the boss
+codersRuleCEOsDrool :: Employee -> Employee -> Ordering
+codersRuleCEOsDrool Coder Coder = EQ
+codersRuleCEOsDrool Coder _     = GT
+codersRuleCEOsDrool _ Coder     = LT
+--codersRuleCEOsDrool e e'        = compare e e'
+-- use cases
+--employeeRank' compare Coder CEO
+--employeeRank' codersRuleCEOsDrool Coder CEO
+
+
