@@ -122,9 +122,9 @@ countTheBeforeVowel str =
             where
                 tf = map (c ==) "aeiou"
         countTheBeforeVowel' (w:ws) cnt
-            | w == "the" && ws /= [] && isVowel (head $ head ws)  = countTheBeforeVowel' ws cnt+1
-            | w == "the" && ws /= []                              = countTheBeforeVowel' ws cnt
-            | w == "the"              = cnt
-            | w /= "the" && ws /= []  = countTheBeforeVowel' ws cnt
-            | otherwise               = cnt
+            | w == "the" && 
+              ws /= [] && 
+              isVowel (head $ head ws)  = countTheBeforeVowel' ws cnt+1
+            | ws /= []                  = countTheBeforeVowel' ws cnt
+            | otherwise                 = cnt
 
