@@ -1,5 +1,5 @@
 
--- Smart constructors for datatypes
+-- 12.2 Smart constructors for datatypes
 
 
 -- Simple product type
@@ -19,7 +19,7 @@
 --     | name /= "" && age >= 0  = Just $ Person name age
 --     | otherwise               = Nothing
 
-
+-- 12.3 Either
 -- Either, Left, Right -- create either PersonInvalid or Person
 -- Left is the error constructor -- functor won't map over it
 -- Right is the valid constructor
@@ -67,8 +67,9 @@ mkPerson' _              (Left badAge) = Left badAge
 ---- mkPerson name age = liftA2 Person (nameOkay name) (ageOkay age) -- note the liftA2
 
 
+-- 12.4 Kinds, higher order types
 
-
+-- fmap Just [1,2,3]
 
 
 -- Chapter Exercises
@@ -94,9 +95,9 @@ notThe x
     | x /= "the" = Just x  
 
 replaceThe :: String -> String
-replaceThe x
-    | length x >= 3  = replaceThe' x 0
-    | length x <  3  = x
+replaceThe str
+    | length str >= 3  = replaceThe' str 0
+    | length str <  3  = str
     where 
         replaceThe' x n -- Utility fn actually doing the job
             | n > length x - 3 = x  -- end of string
@@ -109,3 +110,21 @@ replaceThe x
 -- replaceThe "hello the cow loves us the"
 
 -- 2.
+
+countTheBeforeVowel :: String -> Integer
+countTheBeforeVowel str =
+    countTheBeforeVowel' strL cnt
+    where
+        strL = words str
+        cnt = 0
+        isVowel c = 
+            foldr (||) False tf
+            where
+                tf = map (c ==) "aeiou"
+        countTheBeforeVowel' (w:ws) cnt
+            | w == "the" && ws /= [] && isVowel (head $ head ws)  = countTheBeforeVowel' ws cnt+1
+            | w == "the" && ws /= []                              = countTheBeforeVowel' ws cnt
+            | w == "the"              = cnt
+            | w /= "the" && ws /= []  = countTheBeforeVowel' ws cnt
+            | otherwise               = cnt
+
