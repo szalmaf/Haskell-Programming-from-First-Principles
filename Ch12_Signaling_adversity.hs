@@ -145,3 +145,17 @@ countVowels word
             | ws == []                = cnt
             | ws /= [] && (isVowel w) = countVowels' ws cnt + 1
             | otherwise               = countVowels' ws cnt
+
+
+-- Validate a word
+newtype Word' = Word' String
+    deriving (Eq, Show)
+vowels = "aeiou"
+mkWord :: String -> Maybe Word'
+mkWord s 
+    | nVowels > nConsonants  = Nothing
+    | otherwise              = Just $ Word' s
+    where
+        len = toInteger $ length s
+        nVowels = countVowels s
+        nConsonants = len - nVowels
