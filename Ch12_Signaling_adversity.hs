@@ -128,3 +128,20 @@ countTheBeforeVowel str =
             | ws /= []                  = countTheBeforeVowel' ws cnt
             | otherwise                 = cnt
 
+-- 3. 
+
+isVowel :: Char -> Bool
+isVowel c =
+    foldr (||) False tf
+    where
+        tf = map (c ==) "aeiou"
+countVowels :: String -> Integer
+countVowels word
+    | word == []   = 0  -- guard for empty string 
+    | otherwise   = countVowels' word 0
+    where
+        countVowels' (w:ws) cnt
+            | ws == [] && (isVowel w) = cnt + 1
+            | ws == []                = cnt
+            | ws /= [] && (isVowel w) = countVowels' ws cnt + 1
+            | otherwise               = countVowels' ws cnt
