@@ -148,14 +148,51 @@ countVowels word
 
 
 -- Validate a word
+
 newtype Word' = Word' String
     deriving (Eq, Show)
 vowels = "aeiou"
 mkWord :: String -> Maybe Word'
 mkWord s 
     | nVowels > nConsonants  = Nothing
-    | otherwise              = Just $ Word' s
+    | otherwise              = Just $ Word'     s
     where
         len = toInteger $ length s
         nVowels = countVowels s
         nConsonants = len - nVowels
+
+
+-- It's only Natural
+
+data Nat =
+      Zero
+    | Succ Nat
+    deriving (Eq, Show)
+
+natToInteger :: Nat -> Integer
+natToInteger Zero = 0
+natToInteger (Succ x) = 1 + (natToInteger x)
+
+integerToNat :: Integer -> Maybe Nat
+integerToNat n
+    | n < 0     = Nothing
+    | n == 0    = Just Zero
+    | otherwise = Just (integerToNat' n)
+    where
+        integerToNat' 0 = Zero
+        integerToNat' n = Succ (integerToNat' (n-1))
+
+-- Small library for Maybe
+
+-- 1.
+isJust :: Maybe a -> Bool
+isJust (Just _)  = True
+isJust _  = False
+
+isNothing :: Maybe a -> Bool
+isNothing Just _ = False
+isNothing Nothing = True
+
+-- 2.
+-- mayybee :: b -> (a -> b) -> Maybe a -> b
+-- mayybee x f 
