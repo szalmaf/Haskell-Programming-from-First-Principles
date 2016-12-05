@@ -194,6 +194,80 @@ isNothing (Just _) = False
 isNothing Nothing = True
 
 -- 2.
-mayybee :: b -> (a -> b) -> Maybe a -> b
-mayybee x f Nothing = f (x + 0)
-mayybee x f (Just y) = f (x + y)
+-- Needs (Num a, Num b) typeclass restriction!!!!
+mayybee :: (Num a, Num b) => b -> (a -> b) -> Maybe a -> b
+mayybee x f Nothing = x + f 0 
+mayybee x f (Just y) = x + f y
+
+-- 3.
+-- Needs Num a typeclass restriction!!!!
+fromMaybe :: Num a => a -> Maybe a -> a
+fromMaybe x Nothing = mayybee x (+0) Nothing
+fromMaybe x (Just y) = mayybee x (+0) (Just y)
+
+-- 4.
+listToMaybe :: [a] -> Maybe a
+listToMaybe [] = Nothing
+listToMaybe (x:xs) = Just x
+
+maybeToList :: Maybe a -> [a]
+maybeToList Nothing = []
+maybeToList (Just x) = [x]
+
+-- 5.
+catMaybes :: [Maybe a] -> [a]
+catMaybes [] = []
+catMaybes ((Just x):xs) = x : (catMaybes xs)  
+
+-- 6.
+flipMaybe :: [Maybe a] -> Maybe [a]
+flipMaybe [] = Nothing
+flipMaybe (Nothing:xs) = Nothing
+flipMaybe xs = Just $ flipMaybe' xs
+    where
+        flipMaybe' ((Just x):xs) = x:(flipMaybe' xs)
+
+-- Small library for Either
+
+-- 1.
+lefts' :: [Either a b] -> [a]
+lefts' xs = foldr f [] xs
+    where 
+        f (Left x) ys  = x : ys
+        f (Right x) ys = ys
+
+-- 2.
+rights' :: [Either a b] -> [b]
+rights' xs = foldr f [] xs
+    where
+        f (Left x) ys  = ys
+        f (Right x) ys = x : ys
+
+-- 3.
+partitionEithers' :: [Either a b] -> ([a], [b])
+partitionEithers' xs = foldr f ([],[]) xs
+    where
+        f (Left x) ys  = (x : fst ys, snd ys)
+        f (Right x) ys = (fst ys, x : snd ys)
+
+-- 4.
+eitherMaybe' :: (b -> c) -> Either a b -> Maybe c
+eitherMaybe' f (Left _) = Nothing
+eitherMaybe' f (Right x) = Just $ f x 
+
+-- 5.
+-- Wont work??????
+either' :: (a -> c) -> (b -> c) -> Either a b -> c
+either' f g (Left x)  = f x
+either' f g (Right y) = g y
+
+-- 6.
+-- based on 5.???????
+eitherMaybe'' :: (b -> c) -> Either a b -> Maybe c
+eitherMaybe'' f x = either' f Nothing x
+
+
+
+
+
+
