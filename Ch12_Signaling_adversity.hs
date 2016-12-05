@@ -194,5 +194,6 @@ isNothing Just _ = False
 isNothing Nothing = True
 
 -- 2.
--- mayybee :: b -> (a -> b) -> Maybe a -> b
--- mayybee x f 
+mayybee :: b -> (a -> b) -> Maybe a -> b
+mayybee x f Nothing = f (x + 0)
+mayybee x f (Just y) = f (x + y)
