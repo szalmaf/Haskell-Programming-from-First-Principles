@@ -190,7 +190,7 @@ isJust (Just _)  = True
 isJust _  = False
 
 isNothing :: Maybe a -> Bool
-isNothing Just _ = False
+isNothing (Just _) = False
 isNothing Nothing = True
 
 -- 2.
