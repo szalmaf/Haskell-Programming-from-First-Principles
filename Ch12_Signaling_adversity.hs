@@ -319,6 +319,15 @@ betterIterate f x = myUnfoldr g x
     where g y = Just (y, f y)
 
 
+data BinaryTree a =
+      Leaf
+    | Node (BinaryTree a) a (BinaryTree a)
+
+unfold :: (a -> Maybe (a,b,a)) -> a -> BinaryTree b
+unfold f x = case f x of
+    Nothing          -> Leaf
+    Just (x1,x2,x3)  -> Node Leaf x2 Leaf
+
 
 
 
