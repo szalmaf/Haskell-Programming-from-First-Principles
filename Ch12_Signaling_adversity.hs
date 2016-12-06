@@ -1,5 +1,6 @@
 
 -- 12.2 Smart constructors for datatypes
+import Data.List
 
 
 -- Simple product type
@@ -108,6 +109,12 @@ replaceThe str
                 m = take 3 $ drop n x -- take 3 chars at pos n
                 r = drop (n+3) x
 -- replaceThe "hello the cow loves us the"
+-- replaceThe' str = unwords $ map f $ words
+-- replaceThe unwords . map ((maybe "a" id) . notThe) . words
+-- replaceThe''' = unwords . map f . mapp notThe . words
+--     where
+--         f (Just s) = s
+--         f Nothing  = "a"
 
 -- 2.
 
@@ -131,10 +138,8 @@ countTheBeforeVowel str =
 -- 3. 
 
 isVowel :: Char -> Bool
-isVowel c =
-    foldr (||) False tf
-    where
-        tf = map (c ==) "aeiou"
+isVowel c = foldr (||) False tf
+    where tf = map (c ==) "aeiou"
 countVowels :: String -> Integer
 countVowels word
     | word == []   = 0  -- guard for empty string 
@@ -217,38 +222,40 @@ maybeToList (Just x) = [x]
 -- 5.
 catMaybes :: [Maybe a] -> [a]
 catMaybes [] = []
-catMaybes ((Just x):xs) = x : (catMaybes xs)  
+catMaybes ((Just x) : xs) = x : (catMaybes xs)
+catMaybes (Nothing : xs)  = catMaybes xs
+--catMaybes ls = [x | Just x <- ls]
 
 -- 6.
 flipMaybe :: [Maybe a] -> Maybe [a]
 flipMaybe [] = Nothing
 flipMaybe (Nothing:xs) = Nothing
 flipMaybe xs = Just $ flipMaybe' xs
-    where
-        flipMaybe' ((Just x):xs) = x:(flipMaybe' xs)
+    where flipMaybe' ((Just x):xs) = x:(flipMaybe' xs)
+--flipMaybe xs = if any isNothing xs then Nothing else Just (catMaybes xs)
+-- flipMaybe xs = case any isNothing xs of
+--     True  -> Nothing
+--     False -> Just $ catMaybes xs
 
 -- Small library for Either
 
 -- 1.
 lefts' :: [Either a b] -> [a]
 lefts' xs = foldr f [] xs
-    where 
-        f (Left x) ys  = x : ys
-        f (Right x) ys = ys
+    where f (Left x) ys  = x : ys
+          f (Right x) ys = ys
 
 -- 2.
 rights' :: [Either a b] -> [b]
 rights' xs = foldr f [] xs
-    where
-        f (Left x) ys  = ys
-        f (Right x) ys = x : ys
+    where f (Left x) ys  = ys
+          f (Right x) ys = x : ys
 
 -- 3.
 partitionEithers' :: [Either a b] -> ([a], [b])
 partitionEithers' xs = foldr f ([],[]) xs
-    where
-        f (Left x) ys  = (x : fst ys, snd ys)
-        f (Right x) ys = (fst ys, x : snd ys)
+    where f (Left x) ys  = (x : fst ys, snd ys)
+          f (Right x) ys = (fst ys, x : snd ys)
 
 -- 4.
 eitherMaybe' :: (b -> c) -> Either a b -> Maybe c
@@ -258,13 +265,61 @@ eitherMaybe' f (Right x) = Just $ f x
 -- 5.
 -- Wont work??????
 either' :: (a -> c) -> (b -> c) -> Either a b -> c
-either' f g (Left x)  = f x
-either' f g (Right y) = g y
+either' f _ (Left x)  = f x
+either' _ g (Right y) = g y
 
 -- 6.
 -- based on 5.???????
 eitherMaybe'' :: (b -> c) -> Either a b -> Maybe c
-eitherMaybe'' f x = either' f Nothing x
+eitherMaybe'' f x = either' (\y -> Nothing) (Just . f) x
+
+-- *unfold* and *iterate*
+-- iterate :: (a -> a) -> a -> [a]
+-- infoldr :: (b -> Maybe (a, b)) -> b -> [a]
+
+mehSum :: Num a => [a] -> a
+mehSum xs = go 0 xs
+    where go :: Num a => a -> [a] -> a
+          go n [] = n
+          go n (x:xs) = go (n+x) xs
+niceSum :: Num a => [a] -> a
+niceSum = foldl' (+) 0
+
+mehProduct :: Num a => [a] -> a
+mehProduct xs = go 1 xs
+    where go :: Num a => a -> [a] -> a
+          go n [] = n
+          go n (x:xs) = go (n*x) xs
+niceProduct :: Num a => [a] -> a
+niceProduct = foldl' (*) 1
+
+mehConcat :: [[a]] -> [a]
+mehConcat xs = go [] xs
+    where go :: [a] -> [[a]] -> [a]
+          go xs' [] = xs'
+          go xs' (x:xs) = go (xs' ++ x) xs
+niceConcat :: [[a]] -> [a]
+niceConcat = foldr (++) []
+
+-- 1.
+myIterate :: (a -> a) -> a -> [a]
+myIterate f x = x : (myIterate f $ f x)
+
+myUnfoldr :: (b -> Maybe (a, b)) -> b -> [a]
+myUnfoldr f x = case f x of
+    Nothing     -> []
+    Just (y,z)  -> y : (myUnfoldr f z) 
+
+myUnfoldr' f x = go $ f x
+    where go Nothing = []
+          go $ Just (a,b) = a : go $ f b
+
+betterIterate :: (a -> a) -> a -> [a]
+betterIterate f x = myUnfoldr g x
+    where g y = Just (y, f y)
+
+
+
 
 
 
