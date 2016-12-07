@@ -1,7 +1,12 @@
 module Main where
 
+import System.IO
 import Hello
 
 main :: IO()
-main = sayHello
+main = do 
+    hSetBuffering stdout NoBuffering
+    putStr "Please input your name: "
+    name <- getLine
+    sayHello name
 
