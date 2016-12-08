@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 -- The name of the package.
-name:                Hello-haskell
+name:                hello
 
 -- The package version.  See the Haskell package versioning policy (PVP) 
 -- for standards guiding when and how versions should be incremented.
@@ -25,7 +25,7 @@ license:             BSD3
 license-file:        LICENSE
 
 -- The package author(s).
-author:              [A[A[A[B[B[B
+author:              Ferenc Szalma
 
 -- An email address to which users can send suggestions, bug reports, and 
 -- patches.
@@ -45,8 +45,14 @@ extra-source-files:  ChangeLog.md
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
+library
+  exposed-modules:     Hello
+  ghc-options:         -Wall
+  hs-source-dirs:      src
+  build-depends:       base >=4.9 && <4.10
+  default-language:    Haskell2010
 
-executable Hello-haskell
+executable hello-haskell
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
   
@@ -58,6 +64,7 @@ executable Hello-haskell
   
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.9 && <4.10
+                    ,  hello
   
   -- Directories containing source files.
   hs-source-dirs:      src
