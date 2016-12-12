@@ -11,12 +11,14 @@ import System.Random (randomRIO)
 -- main = putStrLn "Hello, Haskell!"
 
 
-type WordList = [String]
+newtype WordList = 
+    WordList [String]
+    deriving (Show, Eq)
 
 allWords :: IO WordList
 allWords = do
     dict <- readFile "/usr/share/dict/words"
-    return (lines dict)
+    return $ WordList (lines dict)
 
 minWordLength :: Int
 minWordLength = 5
@@ -25,14 +27,15 @@ maxWordLength = 9
 
 gameWords :: IO WordList
 gameWords = do
-    aw <- allWords
-    return $ filter gameLength aw
+    (WordList aw) <- allWords
+    return $ WordList (filter gameLength aw)
     where gameLength w =
             let l = length (w :: String)
             in l > minWordLength && l < maxWordLength
 
-randomWord wl = do 
-    randomIndex <- randomRIO (0, length wl - 1)
+randomWord :: WordList -> IO String
+randomWord (WordList wl) = do 
+    randomIndex <- randomRIO (0, (length wl) - 1)
     return $ wl !! randomIndex
 
 randomWord' = gameWords >>= randomWord
