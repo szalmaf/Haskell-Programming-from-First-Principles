@@ -7,8 +7,8 @@ import Data.List (intersperse)
 import System.Exit (exitSuccess)
 import System.Random (randomRIO)
 
-main :: IO ()
-main = putStrLn "Hello, Haskell!"
+-- main :: IO ()
+-- main = putStrLn "Hello, Haskell!"
 
 
 type WordList = [String]
@@ -27,6 +27,9 @@ gameWords :: IO WordList
 gameWords = do
     aw <- allWords
     return $ filter gameLength aw
+    where gameLength w =
+            let l = length (w :: String)
+            in l > minWordLength && l < maxWordLength
 
 randomWord wl = do 
     randomIndex <- randomRIO (0, length wl - 1)
@@ -45,7 +48,7 @@ instance Show Puzzle where
 
 freshPuzzle :: String -> Puzzle
 freshPuzzle wrd = Puzzle wrd mapwrd lst
-    where mapwrd = 
+    where mapwrd = take (length wrd) (repeat Nothing)
           lst    = []
 
 charInWord :: Puzzle -> Char -> Bool
@@ -70,7 +73,7 @@ fillInCharacter (Puzzle word filledInSoFar s) c =
           newFilledInSoFar = 
               zipWith (zipper c) word filledInSoFar
 
-handleGuess :: Puzzle -> char -> IO Puzzle
+handleGuess :: Puzzle -> Char -> IO Puzzle
 handleGuess puzzle guess = do
     putStrLn $ "Your guess was: " ++ [guess]
     case (charInWord puzzle guess
@@ -97,7 +100,7 @@ gameWin :: Puzzle -> IO ()
 gameWin (Puzzle _ filledInSoFar _) =
     if all isJust filledInSoFar then
         do putStrLn "You win!"
-            exitSuccess
+           exitSuccess
         else return ()
 
 runGame :: Puzzle -> IO ()
