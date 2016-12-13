@@ -6,6 +6,7 @@ import Data.Maybe (isJust)
 import Data.List (intersperse)
 import System.Exit (exitSuccess)
 import System.Random (randomRIO)
+import System.IO (hSetBuffering, stdout, BufferMode(NoBuffering))
 
 -- main :: IO ()
 -- main = putStrLn "Hello, Haskell!"
@@ -114,7 +115,8 @@ runGame puzzle = forever $ do
     gameOver puzzle
     gameWin puzzle
     putStrLn $ "Current puzzle is: " ++ show puzzle
-    putStrLn "Guess a letter: "
+    hSetBuffering stdout NoBuffering
+    putStr "Guess a letter: "
     guess <- getLine
     case guess of
         [c] -> handleGuess puzzle c >>= runGame
