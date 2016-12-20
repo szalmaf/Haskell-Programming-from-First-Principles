@@ -1,6 +1,6 @@
 -- class Applicative m => Monad m where 
---     (>>=) :: m a -> (a -> m b) -> m b  -- "bind"
---     (>>) :: m a -> m b -> m b .        -- "do sequencing"
+--     (>>=)  :: m a -> (a -> m b) -> m b -- "bind"
+--     (>>)   :: m a -> m b -> m b        -- "do sequencing"
 --     return :: a -> m a                 -- "pure in Applicative"
 
 -- fmap :: Functor f     =>   (a -> b) -> f a        -> f b
@@ -52,6 +52,8 @@ twoBinds' =
               ++ name ++ " who is: "
               ++ age ++ " years.")
 
+
+-- List monad examples
 twiceWhenEven :: [Integer] -> [Integer]
 twiceWhenEven xs = do
     x <- xs
@@ -71,3 +73,31 @@ twiceWhenEven'' xs = do
     xs >>= \x -> if even x
                     then [x*x, x*x]
                     else []
+
+-- Maybe monad examples
+f :: Integer -> Maybe Integer
+f 0 = Nothing
+f n = Just n
+
+g :: Integer -> Maybe Integer
+g i =
+    if even i
+    then Just (i + 1)
+    else Nothing
+
+h :: Integer -> Maybe String
+h i = Just ("10191" ++ show i)
+
+doSomething' n = do
+    a <- f n
+    b <- g a
+    c <- h b
+    pure (a, b, c)
+
+-- Exercise: Implement Either Monad
+data Sum a b =
+      First a 
+    | Second b
+    deriving (Eq, Show)
+instance Functor (Sum a) where
+    fmap f xs = id
