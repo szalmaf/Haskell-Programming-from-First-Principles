@@ -16,6 +16,10 @@
 -- fmap (+1) [1..3]
 -- [1..3] >>= return . (+1)
 
+-- The novel part of monad
+bind' :: Monad m => (a -> m b) -> m a -> m b
+bind' f xs = join $ fmap f xs 
+
 -- do syntax
 bindingAndSequencing :: IO ()
 bindingAndSequencing = do
