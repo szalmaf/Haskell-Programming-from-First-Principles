@@ -20,6 +20,17 @@
 bind' :: Monad m => (a -> m b) -> m a -> m b
 bind' f xs = join $ fmap f xs 
 
+-- Monad lifting functions
+-- liftM2 (,) (Just 3) (Just 5)
+-- zipWith (+) [3,4] [5,6]
+-- [8,10]
+-- liftA2 (+) [3,4] [5,6]
+-- [8,9,9,10]
+-- zipWith3 (,,) [1,2] [3] [5,6]
+-- [(1,3,5)]
+-- liftM3 (,,) [1,2] [3] [5,6]
+-- [(1,3,5),(1,3,6),(2,3,5),(2,3,6)]
+
 -- do syntax
 bindingAndSequencing :: IO ()
 bindingAndSequencing = do
