@@ -100,4 +100,12 @@ data Sum a b =
     | Second b
     deriving (Eq, Show)
 instance Functor (Sum a) where
-    fmap f xs = id
+    fmap f xs = 
+
+instance Applicative (Sum a) where
+    pure  =
+    (<*>) =
+
+instance Monad (Sum a) where
+    return = pure
+    (>>=) = 
