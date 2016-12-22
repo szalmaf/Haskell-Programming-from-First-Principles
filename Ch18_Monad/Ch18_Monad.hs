@@ -31,7 +31,11 @@ bind' f xs = join $ fmap f xs
 -- liftM3 (,,) [1,2] [3] [5,6]
 -- [(1,3,5),(1,3,6),(2,3,5),(2,3,6)]
 
--- do syntax
+-- import Control.Monad (join)
+-- join $ putStrLn <$> getLine  -- need join to make
+-- 2 IOs work or putStrLn >>= getLine 
+
+-- do syntax and monads
 bindingAndSequencing :: IO ()
 bindingAndSequencing = do
     putStrLn "name pls: "
