@@ -16,7 +16,7 @@ genOrdering :: Gen Ordering
 genOrdering = elements [LT, EQ, GT]
 
 genChar :: Gen Char
-genChar = elements ['a'..'z']
+genChar = elements (['a'..'z'] ++ ['A'..'Z'])
 
 genTuple :: (Arbitrary a, Arbitrary b) => Gen (a,b)
 genTuple = do
@@ -72,5 +72,7 @@ main = hspec $ do
             dividedBy 15 3 `shouldBe` (5, 0)
         it "22 divided by 5 is 4 remainder 2" $ do
             dividedBy 22 5 `shouldBe` (4, 2)
+        it "x+1 should always greater than x" $ do
+            property $ \x -> x + 1 > (x :: Int)
 
 
