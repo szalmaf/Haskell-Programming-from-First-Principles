@@ -1,9 +1,12 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Main where 
 
 import qualified Data.Map as M
 import Morse
 import Test.QuickCheck
 -- import Test.QuickCheck.Gen (oneof)
+import GHC.Generics
 
 allowedChars :: [Char]
 allowedChars = M.keys letterToMorse
@@ -98,6 +101,23 @@ sumGenFirstPls = do
 sumGenCharIntFirst :: Gen (Sum Char Int)
 sumGenCharIntFirst = sumGenFirstPls
 
+----------------
+
+data Bool' = 
+      True'
+    | False'
+    deriving (Generic)
+
+instance CoArbitrary Bool'
+
+trueGen :: Gen Int
+trueGen = coarbitrary True' arbitrary
+
+falseGen :: Gen Int
+falseGen = coarbitrary False' arbitrary
+
+
+----------------
 
 
 main :: IO ()
