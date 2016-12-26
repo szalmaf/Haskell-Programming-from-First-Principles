@@ -3,6 +3,7 @@ module Main where
 import qualified Data.Map as M
 import Morse
 import Test.QuickCheck
+-- import Test.QuickCheck.Gen (oneof)
 
 allowedChars :: [Char]
 allowedChars = M.keys letterToMorse
@@ -70,11 +71,42 @@ instance ( Arbitrary a, Arbitrary b) => Arbitrary (Pair a b) where
 pairGenIntString :: Gen (Pair Int String)
 pairGenIntString = pairGen
 
+----------------
+
+data Sum a b =
+      First a
+    | Second b
+    deriving (Eq, Show)
+
+sumGenEqual :: (Arbitrary a, Arbitrary b) => Gen (Sum a b)
+sumGenEqual = do
+    a <- arbitrary
+    b <- arbitrary
+    oneof [return $ First a, return $ Second b] -- Here Arbitrary instance delegated to a and b
+
+sumGenCharInt :: Gen (Sum Char Int)
+sumGenCharInt = sumGenEqual
+
+----------------
+
+sumGenFirstPls :: (Arbitrary a, Arbitrary b) => Gen (Sum a b)
+sumGenFirstPls = do
+    a <- arbitrary
+    b <- arbitrary -- set frequency of First and Second
+    frequency [(10, return $ First a), (1, return $ Second b)]
+
+sumGenCharIntFirst :: Gen (Sum Char Int)
+sumGenCharIntFirst = sumGenFirstPls
+
+
+
 main :: IO ()
 main = do
     quickCheck prop_thereAndBackAgain
     sample trivialGen
     sample identityGenInt
     sample pairGenIntString
+    sample sumGenCharInt
+    sample sumGenCharIntFirst
 
 
