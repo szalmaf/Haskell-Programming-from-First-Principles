@@ -11,4 +11,10 @@ instance Monoid a => Monoid (Optional a) where
     mappend (Only x) Nada     = Only x
     mappend (Only x) (Only y) = Only (x <> y)
 
-    
+newtype First' a =  
+    First' { getFirst' :: Optional a }
+    deriving (Eq, Show)
+
+instance Monoid a => Monoid (First' a) where
+    mempty  = First' {getFirst' = Nada}
+    mappend x y = First' {getFirst' = (getFirst' x) <> (getFirst' y)} 
