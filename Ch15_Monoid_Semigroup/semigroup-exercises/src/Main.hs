@@ -63,6 +63,19 @@ type BoolConjAssoc =
   ->  BoolConj
   ->  Bool
 
+newtype BoolDisj =
+  BoolDisj Bool deriving (Eq, Show)
+instance Semigroup BoolDisj where
+  BoolDisj False <> BoolDisj False = BoolDisj False
+  BoolDisj True  <> _              = BoolDisj True
+  _              <> BoolDisj True  = BoolDisj True
+instance Arbitrary BoolDisj where
+  arbitrary = fmap BoolDisj arbitrary
+type BoolDisjAssoc = 
+      BoolDisj 
+  ->  BoolDisj
+  ->  BoolDisj
+  ->  Bool
 
 main :: IO ()
 main = do
@@ -73,6 +86,6 @@ main = do
   quickCheck (semigroupAssoc :: (ThreeAssoc Int Double String))
   verboseCheck (semigroupAssoc :: (FourAssoc Double Int Int Int))
   verboseCheck (semigroupAssoc :: BoolConjAssoc)
-
+  quickCheck (semigroupAssoc :: BoolDisjAssoc)
 
 
