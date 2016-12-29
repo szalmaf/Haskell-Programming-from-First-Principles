@@ -12,6 +12,7 @@ data Optional a =
 
 instance Monoid a => Monoid (Optional a) where 
     mempty  = Nada
+    mappend Nada Nada         = Nada
     mappend Nada (Only x)     = Only x
     mappend (Only x) Nada     = Only x
     mappend (Only x) (Only y) = Only (x <> y)
@@ -24,12 +25,12 @@ instance Monoid a => Monoid (First' a) where
     mempty      = First' {getFirst' = Nada}
     mappend x y = First' {getFirst' = (getFirst' x) <> (getFirst' y)} 
 
-instance Arbitrary a => Arbitrary (First' a) where
-    arbitrary = frequency [(1,  return First' {getFirst' = Nada}), -- Can mempty be used as below??
-                           (10, fmap (\x -> First' {getFirst' = Only x}) arbitrary)]
 -- instance Arbitrary a => Arbitrary (First' a) where
---     arbitrary = frequency [(1,  return mempty :: (First' a)), 
+--     arbitrary = frequency [(1,  return First' {getFirst' = Nada}), -- Can mempty be used as below??
 --                            (10, fmap (\x -> First' {getFirst' = Only x}) arbitrary)]
+instance (Arbitrary a, Monoid a) => Arbitrary (First' a) where
+    arbitrary = frequency [(1,  return (mempty :: (First' a))), 
+                           (10, fmap (\x -> First' {getFirst' = Only x}) arbitrary)]
 
 firstMappend :: Monoid a => First' a -> First' a -> First' a
 firstMappend = mappend
@@ -57,9 +58,9 @@ monoidRightIdentity x = (mempty <> x) == x
 
 
 
-
 main :: IO ()
 main = do
     quickCheck (monoidAssoc :: FirstMappend)
     quickCheck (monoidLeftIdentity :: FstId)
     quickCheck (monoidRightIdentity :: FstId)
+
