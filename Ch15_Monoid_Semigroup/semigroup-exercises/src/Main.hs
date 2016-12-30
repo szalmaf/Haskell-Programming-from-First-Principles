@@ -185,6 +185,9 @@ instance Monoid BoolDisj where
   mempty = BoolDisj False
   mappend = (<>)
 
+instance (Semigroup b, Monoid b) => Monoid (Combine a b) where
+  mempty = Combine $ \x -> mempty -- fn that maps any x to mempty of b
+  mappend = (<>)
 
 main :: IO ()
 main = do
