@@ -1,8 +1,11 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Main where
 
 import Data.Semigroup
 import Control.Monad
 import Test.QuickCheck
+import GHC.Generics
 
 semigroupAssoc :: (Eq m, Semigroup m) => m -> m -> m -> Bool
 semigroupAssoc a b c = (a <> (b <> c)) == ((a <> b) <> c)
@@ -90,6 +93,25 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Or a b) where
 type OrAssoc a b = Or a b -> Or a b -> Or a b -> Bool
 
 
+data Bool' =
+    True'
+  | False'
+  deriving (Generic)
+instance CoArbitrary Bool'
+trueGen :: Gen Int
+trueGen = coarbitrary True' arbitrary
+falseGen :: Gen Int
+falseGen = coarbitrary False' arbitrary
+
+  
+newtype Combine a b =
+  Combine { unCombine :: (a -> b) }
+  -- deriving (Show)
+instance Semigroup b => Semigroup (Combine a b) where
+  (Combine f) <> (Combine g) = Combine $ (f <> g)
+-- instance CoArbitrary (Combine a b) where
+
+
 
 main :: IO ()
 main = do
@@ -102,5 +124,8 @@ main = do
   verboseCheck (semigroupAssoc :: BoolConjAssoc)
   quickCheck (semigroupAssoc :: BoolDisjAssoc)
   quickCheck (semigroupAssoc:: OrAssoc Int Double)
-
+  -- let f = Combine $ \n -> Sum (n + 1)
+  -- let g = Combine $ \n -> Sum (n - 1)
+  -- f 5
+  -- g 5
 
