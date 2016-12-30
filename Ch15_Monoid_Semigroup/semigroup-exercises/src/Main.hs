@@ -111,6 +111,23 @@ instance Semigroup b => Semigroup (Combine a b) where
   (Combine f) <> (Combine g) = Combine $ (f <> g)
 -- instance CoArbitrary (Combine a b) where
 
+newtype Comp a =
+  Comp {unComp :: (a -> a)}
+instance Semigroup a => Semigroup (Comp a) where
+  (Comp f) <> (Comp g) = Comp $ (f <> g)
+-- f = Comp $ \n -> (2*n+1); g = Comp $ \n -> (n-1)
+-- unComp (f <> g) $ (Sum 1)
+-- Sum {getSum = 3}
+
+data Validation a b =
+    Failure' a
+  | Success' b
+  deriving (Eq, Show)
+instance Semigroup a => Semigroup (Validation a b) where
+  Success' x <> Success' y = Success' x -- Is it good enough???? b is not Semigroup
+  Failure' x <> Success' y = Failure' x
+  Success' x <> Failure' y = Failure' y
+  Failure' x <> Failure' y = Failure' $ (x <> y)
 
 
 main :: IO ()
