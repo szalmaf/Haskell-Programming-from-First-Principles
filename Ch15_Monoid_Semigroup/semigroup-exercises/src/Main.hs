@@ -7,6 +7,13 @@ import Control.Monad
 import Test.QuickCheck
 import GHC.Generics
 
+
+
+instance Arbitrary a => Arbitrary (Sum a) where
+  arbitrary = fmap Sum arbitrary
+
+-- Semigroup exercises
+
 semigroupAssoc :: (Eq m, Semigroup m) => m -> m -> m -> Bool
 semigroupAssoc a b c = (a <> (b <> c)) == ((a <> b) <> c)
 
@@ -18,15 +25,15 @@ instance Arbitrary Trivial where
 type TrivialAssoc = Trivial -> Trivial -> Trivial -> Bool
 
 newtype Identity a = Identity a deriving (Eq, Show)
-instance Semigroup (Identity a) where
-  x <> y = x
+instance Semigroup a => Semigroup (Identity a) where
+  Identity x <> Identity y = Identity (x <> y)  
 instance Arbitrary a => Arbitrary (Identity a) where
   arbitrary = fmap Identity arbitrary
 type IdentityAssoc a = Identity a -> Identity a -> Identity a -> Bool
 
 data Two a b = Two a b deriving (Eq, Show)
-instance Semigroup (Two a b) where
-  x <> y = x
+instance (Semigroup a, Semigroup b) => Semigroup (Two a b) where
+  Two x1 x2 <> Two y1 y2 = Two (x1 <> y1) (x2 <> y2) 
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
   arbitrary = liftM2 Two arbitrary arbitrary
 type TwoAssoc a b = Two a b -> Two a b -> Two a b -> Bool
@@ -119,7 +126,7 @@ instance Semigroup a => Semigroup (Comp a) where
 -- unComp (f <> g) $ (Sum 1)
 -- Sum {getSum = 3}
 
-data Validation a b =
+data Validation a b = -- Why a and b are diff?? Both could be String
     Failure' a
   | Success' b
   deriving (Eq, Show)
@@ -129,20 +136,80 @@ instance Semigroup a => Semigroup (Validation a b) where
   Success' x <> Failure' y = Failure' y
   Failure' x <> Failure' y = Failure' $ (x <> y)
 
+newtype AccumulateRight a b = -- a and b are separately semigroups
+  AccumulateRight (Validation a b)
+  deriving (Eq, Show)
+instance Semigroup b => Semigroup (AccumulateRight a b) where
+  AccumulateRight (Success' x) <> AccumulateRight (Success' y) = AccumulateRight (Success' $ (x <> y)) 
+  AccumulateRight (Failure' x) <> AccumulateRight (Success' y) = AccumulateRight (Failure' x)
+  AccumulateRight (Success' x) <> AccumulateRight (Failure' y) = AccumulateRight (Failure' y)
+  AccumulateRight (Failure' x) <> AccumulateRight (Failure' y) = AccumulateRight (Failure' y)
+
+newtype AccumulateBoth a b = -- a and b are separately semigroups
+  AccumulateBoth (Validation a b)
+  deriving (Eq, Show)
+instance (Semigroup a, Semigroup b) => Semigroup (AccumulateBoth a b) where
+  AccumulateBoth (Success' x) <> AccumulateBoth (Success' y) = AccumulateBoth (Success' $ (x <> y)) 
+  AccumulateBoth (Failure' x) <> AccumulateBoth (Success' y) = AccumulateBoth (Failure' x)
+  AccumulateBoth (Success' x) <> AccumulateBoth (Failure' y) = AccumulateBoth (Failure' y)
+  AccumulateBoth (Failure' x) <> AccumulateBoth (Failure' y) = AccumulateBoth (Failure' $ (x <> y))
+
+
+
+-- Monoid exercises
+
+monoidLeftIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidLeftIdentity x = 
+  mappend x mempty == x
+monoidRightIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidRightIdentity x =
+  mappend mempty x == x
+
+instance Monoid Trivial where
+  mempty = Trivial
+  mappend = (<>)
+
+instance (Semigroup a, Monoid a) => Monoid (Identity a) where
+  mempty = Identity mempty
+  mappend = (<>)
+
+instance (Semigroup a, Semigroup b, Monoid a, Monoid b) => Monoid (Two a b) where
+  mempty = Two mempty mempty
+  mappend = (<>)
+
+instance Monoid BoolConj where
+  mempty = BoolConj True
+  mappend = (<>)
+
+instance Monoid BoolDisj where
+  mempty = BoolDisj False
+  mappend = (<>)
+
 
 main :: IO ()
 main = do
   quickCheck (semigroupAssoc :: TrivialAssoc)
-  quickCheck (semigroupAssoc :: (IdentityAssoc Int))
+  quickCheck (semigroupAssoc :: (IdentityAssoc (Sum Int)))
   -- verboseCheck (semigroupAssoc :: (TwoAssoc Int String))
-  quickCheck (semigroupAssoc :: (TwoAssoc Int String))
+  quickCheck (semigroupAssoc :: (TwoAssoc (Sum Int) String))
   quickCheck (semigroupAssoc :: (ThreeAssoc Int Double String))
-  verboseCheck (semigroupAssoc :: (FourAssoc Double Int Int Int))
-  verboseCheck (semigroupAssoc :: BoolConjAssoc)
+  -- verboseCheck (semigroupAssoc :: (FourAssoc Double Int Int Int))
+  -- verboseCheck (semigroupAssoc :: BoolConjAssoc)
+  quickCheck (semigroupAssoc :: (FourAssoc Double Int Int Int))
+  quickCheck (semigroupAssoc :: BoolConjAssoc)
   quickCheck (semigroupAssoc :: BoolDisjAssoc)
   quickCheck (semigroupAssoc:: OrAssoc Int Double)
-  -- let f = Combine $ \n -> Sum (n + 1)
-  -- let g = Combine $ \n -> Sum (n - 1)
-  -- f 5
-  -- g 5
+
+  quickCheck (monoidLeftIdentity :: Trivial -> Bool)
+  quickCheck (monoidRightIdentity :: Trivial -> Bool)
+  quickCheck (monoidLeftIdentity :: Identity [Int] -> Bool)
+  quickCheck (monoidRightIdentity :: Identity [Int] -> Bool)
+  quickCheck (monoidLeftIdentity :: Two (Sum Int) [Int] -> Bool)
+  quickCheck (monoidRightIdentity :: Two (Sum Int) [Int] -> Bool)
+  quickCheck (monoidLeftIdentity :: BoolConj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolConj -> Bool)
+  quickCheck (monoidLeftIdentity :: BoolDisj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolDisj -> Bool)
+  
+
 
