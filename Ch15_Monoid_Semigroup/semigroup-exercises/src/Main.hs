@@ -189,6 +189,10 @@ instance (Semigroup b, Monoid b) => Monoid (Combine a b) where
   mempty = Combine $ \x -> mempty -- fn that maps any x to mempty of b
   mappend = (<>)
 
+instance (Semigroup a, Monoid a) => Monoid (Comp a) where
+  mempty = Comp $ \x -> mempty
+  mappend = (<>)  
+
 main :: IO ()
 main = do
   quickCheck (semigroupAssoc :: TrivialAssoc)
