@@ -191,7 +191,13 @@ instance (Semigroup b, Monoid b) => Monoid (Combine a b) where
 
 instance (Semigroup a, Monoid a) => Monoid (Comp a) where
   mempty = Comp $ \x -> mempty
-  mappend = (<>)  
+  mappend = (<>)
+
+-- newtype Mem s a =
+--   Mem { runMem :: s-> (a,s)} 
+-- instance Monoid a => Monoid (Mem s a) where
+--   mempty = Mem $ \s -> (mempty, s)
+--   mappend x y = Mem $ \s -> ((fst x) <> (fst y), ((snd x) . (snd y)) s) 
 
 main :: IO ()
 main = do
