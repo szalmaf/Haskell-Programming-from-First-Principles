@@ -32,6 +32,7 @@ instance Functor Identity where
   fmap f (Identity x) = Identity (f x)
 instance Arbitrary a => Arbitrary (Identity a) where
   arbitrary = fmap Identity arbitrary
+type IdentityFI = Identity Int -> Bool
 type IdentityFC = Identity Int -> IntToInt -> IntToInt -> Bool
 
 
@@ -44,5 +45,5 @@ main = do
   quickCheck li
   quickCheck (functorCompose' :: IntFC)
 
-  quickCheck $ \x -> functorIdentity (x :: (Identity Int))
+  quickCheck (functorIdentity :: IdentityFI)
   quickCheck (functorCompose' :: IdentityFC)
