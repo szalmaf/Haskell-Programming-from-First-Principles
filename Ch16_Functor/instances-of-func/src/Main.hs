@@ -47,6 +47,10 @@ type PairFC = Pair Int -> IntToInt -> IntToInt -> Bool
 data Two a b = Two a b deriving (Eq, Show)
 instance Functor (Two a) where
   fmap f (Two x y) = Two x (f y)
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
+  arbitrary = liftM2 Two arbitrary arbitrary
+type TwoFI = Two Double Int -> Bool
+type TwoFC = Two Double Int -> IntToInt -> IntToInt -> Bool 
 
 
 main :: IO ()
@@ -61,3 +65,9 @@ main = do
 
   quickCheck (functorIdentity :: PairFI)
   quickCheck (functorCompose' :: PairFC)
+
+  quickCheck (functorIdentity :: TwoFI)
+  quickCheck (functorCompose'  :: TwoFC)
+
+
+
