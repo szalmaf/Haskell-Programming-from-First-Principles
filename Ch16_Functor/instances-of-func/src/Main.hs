@@ -68,6 +68,15 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
 type Three'FI = Three' [Int] Int -> Bool
 type Three'FC = Three' [Int] Int -> IntToInt -> IntToInt -> Bool
  
+data Four a b c d = Four a b c d deriving (Eq, Show)
+instance Functor (Four a b c) where
+  fmap f (Four x y z zz) = Four x y z (f zz)
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) =>
+  Arbitrary (Four a b c d) where
+  arbitrary = liftM4 Four arbitrary arbitrary arbitrary arbitrary
+type FourFI = Four Double Integer [Int] Int -> Bool
+type FourFC = Four Double Integer [Int] Int -> IntToInt -> IntToInt-> Bool
+
 main :: IO ()
 main = do
 
@@ -90,4 +99,6 @@ main = do
   quickCheck (functorIdentity :: Three'FI)
   quickCheck (functorCompose' :: Three'FC)
 
+  quickCheck (functorIdentity :: FourFI)
+  quickCheck (functorCompose' :: FourFC)
 
