@@ -4,6 +4,7 @@ module Main where
 
 import Test.QuickCheck
 import Test.QuickCheck.Function
+import Control.Monad
 
 
 functorIdentity :: (Functor f, Eq (f a)) => 
@@ -35,7 +36,17 @@ instance Arbitrary a => Arbitrary (Identity a) where
 type IdentityFI = Identity Int -> Bool
 type IdentityFC = Identity Int -> IntToInt -> IntToInt -> Bool
 
+data Pair a = Pair a a deriving (Eq, Show)
+instance Functor Pair where
+  fmap f (Pair x y) = Pair (f x) (f y)
+instance Arbitrary a => Arbitrary (Pair a) where
+  arbitrary = liftM2 Pair arbitrary arbitrary
+type PairFI = Pair Int -> Bool
+type PairFC = Pair Int -> IntToInt -> IntToInt -> Bool 
 
+data Two a b = Two a b deriving (Eq, Show)
+instance Functor (Two a) where
+  fmap f (Two x y) = Two x (f y)
 
 
 main :: IO ()
@@ -47,3 +58,6 @@ main = do
 
   quickCheck (functorIdentity :: IdentityFI)
   quickCheck (functorCompose' :: IdentityFC)
+
+  quickCheck (functorIdentity :: PairFI)
+  quickCheck (functorCompose' :: PairFC)
