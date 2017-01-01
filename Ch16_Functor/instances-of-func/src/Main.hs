@@ -77,6 +77,17 @@ instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) =>
 type FourFI = Four Double Integer [Int] Int -> Bool
 type FourFC = Four Double Integer [Int] Int -> IntToInt -> IntToInt-> Bool
 
+data Four' a b = Four' a a a b deriving (Eq, Show)
+instance Functor (Four' a) where
+  fmap f (Four' x y z zz) = Four' x y z (f zz)
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
+  arbitrary = liftM4 Four' arbitrary arbitrary arbitrary arbitrary
+type Four'FI = Four' Double Int -> Bool
+type Four'FC = Four' Double Int -> IntToInt -> IntToInt-> Bool
+
+-- data Trivial = Trivial's type constructor is not of one parameter one
+
+
 main :: IO ()
 main = do
 
@@ -102,3 +113,5 @@ main = do
   quickCheck (functorIdentity :: FourFI)
   quickCheck (functorCompose' :: FourFC)
 
+  quickCheck (functorIdentity :: Four'FI)
+  quickCheck (functorCompose' :: Four'FC)
