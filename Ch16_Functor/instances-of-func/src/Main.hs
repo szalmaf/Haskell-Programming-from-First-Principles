@@ -60,7 +60,14 @@ instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) wher
 type ThreeFI = Three [Int] Double Int -> Bool
 type ThreeFC = Three [Int] Double Int -> IntToInt -> IntToInt -> Bool
 
-
+data Three' a b = Three' a b b deriving (Eq, Show)
+instance Functor (Three' a) where
+  fmap f (Three' x y z) = Three' x (f y) (f z)
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
+  arbitrary = liftM3 Three' arbitrary arbitrary arbitrary
+type Three'FI = Three' [Int] Int -> Bool
+type Three'FC = Three' [Int] Int -> IntToInt -> IntToInt -> Bool
+ 
 main :: IO ()
 main = do
 
@@ -79,4 +86,8 @@ main = do
 
   quickCheck (functorIdentity :: ThreeFI)
   quickCheck (functorCompose' :: ThreeFC)
+
+  quickCheck (functorIdentity :: Three'FI)
+  quickCheck (functorCompose' :: Three'FC)
+
 
