@@ -87,6 +87,14 @@ type Four'FC = Four' Double Int -> IntToInt -> IntToInt-> Bool
 
 -- data Trivial = Trivial's type constructor is not of one parameter one
 
+data Possibly a =
+    LolNope
+  | Yeppers a
+  deriving (Eq, Show)
+instance Functor Possibly =
+  fmap f (Possibly x) = Possibly (f x)
+
+
 
 main :: IO ()
 main = do
