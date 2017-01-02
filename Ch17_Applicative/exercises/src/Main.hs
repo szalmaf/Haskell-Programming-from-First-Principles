@@ -35,7 +35,18 @@ instance Functor Identity where
   fmap f (Identity x) = Identity (f x)
 instance Applicative Identity where
   pure x = Identity x
-  (<*>) (Identity f) (Identity x) = Identity (f x) 
+  (<*>) (Identity f) (Identity x) = Identity (f x)
+
+newtype Constant a b =
+  Constant { getConstant :: a }
+  deriving (Eq, Ord, Show)
+instance Functor (Constant a) where
+  fmap f (Constant x) = Constant x
+instance Monoid a => Applicative (Constant a) where
+  pure x = Constant mempty -- This is a tricky one!!!
+  (<*>) (Constant f) (Constant x) = Constant x
+
+
 
 main :: IO ()
 main = do
