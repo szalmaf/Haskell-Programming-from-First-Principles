@@ -29,8 +29,13 @@ y2 = lookup 2 $ zip xs2 ys2
 summed :: Maybe Integer
 summed = sum <$> ((,) <$> x2 <*> y2) -- probably something else is expected
 
-
-
+newtype Identity a = Identity a
+  deriving (Eq, Ord, Show)
+instance Functor Identity where 
+  fmap f (Identity x) = Identity (f x)
+instance Applicative Identity where
+  pure x = Identity x
+  (<*>) (Identity f) (Identity x) = Identity (f x) 
 
 main :: IO ()
 main = do
