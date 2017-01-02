@@ -1,4 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE Rank2Types #-} -- for Nat
 
 module Main where
 
@@ -91,8 +92,29 @@ data Possibly a =
     LolNope
   | Yeppers a
   deriving (Eq, Show)
-instance Functor Possibly =
-  fmap f (Possibly x) = Possibly (f x)
+instance Functor Possibly where
+  fmap _ LolNope     = LolNope
+  fmap f (Yeppers x) = Yeppers (f x)
+
+data Sum a b =
+    First a
+  | Second b
+  deriving (Eq, Show)
+instance Functor (Sum a) where
+  fmap _ (First x) = First x
+  fmap f (Second y) = Second (f y)
+
+-- Functor instance to First or Left is impossible bc 
+-- the type arguments have order a b, and we cannot single our a
+-- or anything before the last
+
+
+-- Changing structure and keeping date, instead of 
+-- keeping stucture and changing data
+type Nat f g = forall a . f a -> g a
+maybeToList :: Nat Maybe []
+maybeToList Nothing = []
+maybeToList (Just x) = [x]
 
 
 
