@@ -116,10 +116,13 @@ newtype Combine a b =
   -- deriving (Show)
 instance Semigroup b => Semigroup (Combine a b) where
   (Combine f) <> (Combine g) = Combine $ (f <> g)
--- instance CoArbitrary (Combine a b) where
+--  (Combine f) <> (Combine g) = Combine $ \x -> (f x <> g x)
+instance (CoArbitrary a, Arbitrary b) => Arbitrary (Combine a b) where -- due to Adam
+  arbitrary = fmap Combine arbitrary
+type CombineAssoc a b = Combine a b -> Combine a b -> Combine a b -> Bool
 
 newtype Comp a =
-  Comp {unComp :: (a -> a)}
+  Comp { unComp :: (a -> a) }
 instance Semigroup a => Semigroup (Comp a) where
   (Comp f) <> (Comp g) = Comp $ (f <> g)
 -- f = Comp $ \n -> (2*n+1); g = Comp $ \n -> (n-1)
@@ -193,12 +196,27 @@ instance (Semigroup a, Monoid a) => Monoid (Comp a) where
   mempty = Comp $ \x -> mempty
   mappend = (<>)
 
--- newtype Mem s a =
---   Mem { runMem :: s-> (a,s)} 
--- instance Monoid a => Monoid (Mem s a) where
---   mempty = Mem $ \s -> (mempty, s)
---   mappend x y = Mem $ \s -> ((fst x) <> (fst y), ((snd x) . (snd y)) s) 
--- f' = Mem $ \s -> ("hi", s + 1)
+-- instance Semigroup a => Semigroup (Mem s a) where
+--   f <> g = Mem $ \x ->
+--       let s' = snd $ runMem f s
+--       in ((fst $ runMem f s) <> (fst $ runMem g s'),
+--           snd $ runMem g s')
+
+newtype Mem s a =
+  Mem { runMem :: s -> (a,s) } 
+instance Semigroup a => Semigroup (Mem s a) where
+  Mem f <> Mem g = Mem $ \s -> ((fst . g $ s) <> (fst . f . snd . g $ s)
+                              , (snd . f . snd . g $ s))
+  -- Mem f <> Mem g = Mem $ \s -> ((fst . f $ s) <> (fst . g . snd . f $ s)
+  --                             , (snd . g . snd . f $ s))
+  -- Mem f <> Mem g = Mem $ ((fst . f) <> (fst . g . snd . f), (snd . g . snd . f))
+  -- Mem f <> Mem g = Mem $ \s -> ((fst $ f s) <> (fst $ g (snd $ f s)), -- Is this part assoc???
+  --                   snd $ g (snd $ f s)) -- This is assoc; could be fg instead of gf
+instance (Semigroup a, Monoid a) => Monoid (Mem s a) where
+  mempty  = Mem $ \s -> (mempty, s) -- a is monoid with mempty elem, and -> is monoid
+  mappend = (<>)
+f' = Mem $ \s -> ("hi", s + 1)
+
 
 main :: IO ()
 main = do
@@ -212,7 +230,9 @@ main = do
   quickCheck (semigroupAssoc :: (FourAssoc Double Int Int Int))
   quickCheck (semigroupAssoc :: BoolConjAssoc)
   quickCheck (semigroupAssoc :: BoolDisjAssoc)
-  quickCheck (semigroupAssoc:: OrAssoc Int Double)
+  quickCheck (semigroupAssoc :: OrAssoc Int Double)
+
+  -- quickCheck (semigroupAssoc :: CombineAssoc String Int)
 
   quickCheck (monoidLeftIdentity :: Trivial -> Bool)
   quickCheck (monoidRightIdentity :: Trivial -> Bool)
@@ -225,9 +245,11 @@ main = do
   quickCheck (monoidLeftIdentity :: BoolDisj -> Bool)
   quickCheck (monoidRightIdentity :: BoolDisj -> Bool)
   
-  -- print $ runMem (f' <> mempty) 0
-  -- print $ runMem (mempty <> f') 0
-  -- print $ (runMem mempty 0 :: (String, Int))
-  -- print $ runMem (f' <> mempty) 0 == runMem f' 0
-  -- print $ runMem (mempty <> 0) == runMem f' 0
+  print $ runMem (f' <> mempty) 0
+  print $ runMem (mempty <> f') 0
+  print $ (runMem mempty 0 :: (String, Int))
+  print $ runMem (f' <> mempty) 0 == runMem f' 0
+  print $ runMem (mempty <> f') 0 == runMem f' 0
+
+
 

@@ -8,6 +8,7 @@ data Optional a =
 
 instance Monoid a => Monoid (Optional a) where 
     mempty  = Nada
+    mappend Nada Nada         = Nada
     mappend Nada (Only x)     = Only x
     mappend (Only x) Nada     = Only x
     mappend (Only x) (Only y) = Only (x <> y)

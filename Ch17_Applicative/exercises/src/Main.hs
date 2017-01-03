@@ -1,6 +1,6 @@
 import Data.List (elemIndex)
 
-
+-- List applicative and lookup in map structures
 added :: Maybe Integer
 added = (+3) <$> (lookup 3 $ zip [1,2,3] [4,5,6])
 
@@ -29,6 +29,7 @@ y2 = lookup 2 $ zip xs2 ys2
 summed :: Maybe Integer
 summed = sum <$> ((,) <$> x2 <*> y2) -- probably something else is expected
 
+-- Identity applicative
 newtype Identity a = Identity a
   deriving (Eq, Ord, Show)
 instance Functor Identity where 
@@ -37,6 +38,7 @@ instance Applicative Identity where
   pure x = Identity x
   (<*>) (Identity f) (Identity x) = Identity (f x)
 
+-- Constant applicative
 newtype Constant a b =
   Constant { getConstant :: a }
   deriving (Eq, Ord, Show)
@@ -46,8 +48,11 @@ instance Monoid a => Applicative (Constant a) where
   pure x = Constant mempty -- This is a tricky one!!!
   (<*>) (Constant f) (Constant x) = Constant x
 
-
+-- Maybe applicative
+a = const <$> Just "Hello" <*> (pure "World" :: Maybe String)
+b = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tierness" <*> (pure [1, 2, 3] :: Maybe [Int])
 
 main :: IO ()
 main = do
-  putStrLn "hello world"
+
+  return ()
