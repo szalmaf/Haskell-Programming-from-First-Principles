@@ -76,12 +76,11 @@ concat' :: List (List a) -> List a
 concat' = fold append Nil
 flatMap :: (a -> List b) -> List a -> List b
 flatMap f xs = concat' $ fmap f xs
--- instance Applicative List where
---   pure x = Cons x Nil 
---   _ <*> Nil                   = Nil
---   Nil <*> _                   = Nil
--- --  f <*> (Cons x xs)         = Cons (f x) (f <*> xs)  
---   (Cons f fs) <*> (Cons x xs) = Cons (f x) ((Cons f fs) <*> xs)
+instance Applicative List where
+  pure x = Cons x Nil 
+  fs <*> xs = flatMap fn fs where
+                fn f = fmap f xs 
+
 
 main :: IO ()
 main = do
