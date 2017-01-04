@@ -1,4 +1,10 @@
+module Main where
+
 import Data.List (elemIndex)
+import BadMonoid
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
 
 -- List applicative and lookup in map structures
 added :: Maybe Integer
@@ -52,7 +58,35 @@ instance Monoid a => Applicative (Constant a) where
 a = const <$> Just "Hello" <*> (pure "World" :: Maybe String)
 b = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tierness" <*> (pure [1, 2, 3] :: Maybe [Int])
 
+-- List Applicative Exercise
+data List a =
+    Nil
+  | Cons a (List a)
+  deriving (Eq, Show)
+instance Functor List where
+  fmap _ Nil = Nil
+  fmap f (Cons x xs) = Cons (f x) (fmap f xs) 
+append :: List a -> List a -> List a
+append Nil ys = ys
+append (Cons x xs) ys = Cons x $ xs `append` ys -- recursive step
+fold :: (a -> b -> b) -> b -> List a -> b
+fold _ x Nil = x -- nothing to fold but the init value
+fold f x (Cons y ys) = f y (fold f x ys)
+concat' :: List (List a) -> List a
+concat' = fold append Nil
+flatMap :: (a -> List b) -> List a -> List b
+flatMap f xs = concat' $ fmap f xs
+-- instance Applicative List where
+--   pure x = Cons x Nil 
+--   _ <*> Nil                   = Nil
+--   Nil <*> _                   = Nil
+-- --  f <*> (Cons x xs)         = Cons (f x) (f <*> xs)  
+--   (Cons f fs) <*> (Cons x xs) = Cons (f x) ((Cons f fs) <*> xs)
+
 main :: IO ()
 main = do
+
+
+
 
   return ()
