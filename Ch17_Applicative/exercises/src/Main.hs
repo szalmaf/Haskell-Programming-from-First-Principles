@@ -78,8 +78,8 @@ flatMap :: (a -> List b) -> List a -> List b
 flatMap f xs = concat' $ fmap f xs
 instance Applicative List where
   pure x = Cons x Nil 
-  fs <*> xs = flatMap fn fs where
-                fn f = fmap f xs 
+  fs <*> xs = flatMap fn fs where -- This is an awesome compact
+                fn f = fmap f xs  -- solution
 
 
 main :: IO ()
