@@ -128,10 +128,11 @@ instance Monoid e => Applicative (Validation e) where
   (Failure' x) <*> (Failure' y) = Failure' (mappend x y) -- monoidal!!!
 instance (Arbitrary e, Arbitrary a) => Arbitrary (Validation e a) where
   arbitrary = frequency [(1, fmap Success' arbitrary), (1, fmap Failure' arbitrary)]
-  -- I dont know how to do the above arbitrary w/ elements
 instance (Eq e, Eq a) => EqProp (Validation e a) where 
   (=-=) = eq 
 -- quickBatch  $ applicative (undefined :: Validation  String (Int, Double, Char))
+-- See also: http://stackoverflow.com/questions/36009335/how-do-i-test-this-applicative-instance-with-checkers-no-instance-for-coarbitr
+
 
 
 main :: IO ()
