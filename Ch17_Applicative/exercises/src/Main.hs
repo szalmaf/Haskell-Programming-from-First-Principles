@@ -126,14 +126,12 @@ instance Monoid e => Applicative (Validation e) where
   (Success' x) <*> (Failure' y) = Failure' y
   (Failure' x) <*> (Success' y) = Failure' x
   (Failure' x) <*> (Failure' y) = Failure' (mappend x y) -- monoidal!!!
-
-
-
-
+instance (Arbitrary e, Arbitrary a) => Arbitrary (Validation e a) where
+  arbitrary = frequency [(1, fmap Success' arbitrary), (1, fmap Failure' arbitrary)]
+  -- I dont know how to do the above arbitrary w/ elements
+instance (Eq e, Eq a) => EqProp (Validation e a) where 
+  (=-=) = eq 
 main :: IO ()
 main = do
-
-
-
 
   return ()
