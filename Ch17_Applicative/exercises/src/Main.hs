@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Main where
 
 import Data.List (elemIndex)
@@ -80,6 +82,40 @@ instance Applicative List where
   pure x = Cons x Nil 
   fs <*> xs = flatMap fn fs where -- This is an awesome compact
                 fn f = fmap f xs  -- solution
+
+-- ZipList Applicative Exercise
+take' :: Int -> List a -> List a
+take' _ Nil         = Nil
+take' 0 _           = Nil
+take' x (Cons y ys) = Cons y (take' (x-1) ys)
+
+newtype ZipList' a =
+  ZipList' (List a)
+  deriving (Eq, Show)
+instance Eq a => EqProp (ZipList' a) where
+  xs =-= ys = xs' `eq` ys'
+    where xs' = let (ZipList' l) = xs -- pattern match to get 
+                in take' 3000 l       -- l as List
+          ys' = let (ZipList' l) = ys 
+                in take' 3000 l
+instance Functor ZipList' where
+  fmap f (ZipList' xs) = ZipList' $ fmap f xs
+instance Applicative ZipList' where
+  pure x                     = ZipList' (pure x)
+  _                    <*> ZipList' Nil         = ZipList' Nil
+  ZipList' Nil         <*> _                    = ZipList' Nil
+  ZipList' (Cons f fs) <*> ZipList' (Cons x xs) =
+        ZipList' (Cons (f x) (fs'xs)) where
+          ZipList' fs'xs = ZipList' fs <*> ZipList' xs
+toMyList = foldr Cons Nil
+-- z = ZipList' $ toMyList  [(+9), (*2), (+8)]
+-- z' = ZipList' $ toMyList  [1..3]
+-- z <*> z'
+
+
+
+
+
 
 
 main :: IO ()
