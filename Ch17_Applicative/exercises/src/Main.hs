@@ -166,10 +166,23 @@ instance Arbitrary a => Arbitrary (Pair a) where
 instance Eq a => EqProp (Pair a) where
   (=-=) = eq
 
+data Two a b = Two a b deriving (Eq, Show)
+instance Functor (Two a) where
+  fmap f (Two x y ) = Two x (f y)
+instance Monoid a => Applicative (Two a) where
+  pure x = Two mempty x
+  (Two x g) <*> (Two y z) = Two (mappend x y) (g z)
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
+  arbitrary = Two <$> arbitrary <*> arbitrary
+instance (Eq a, Eq b) => EqProp (Two a b) where
+  (=-=) = eq
+
+
 main :: IO ()
 main = do
 
-  quickBatch  $ applicative (undefined :: Validation  String (Int, Double, Char))
+  quickBatch $ applicative (undefined :: Validation  String (Int, Double, Char))
   quickBatch $ applicative (undefined :: Pair (Int, Double, String))
+  quickBatch $ applicative (undefined :: Two String (Int, Double, String))
 
   return ()
