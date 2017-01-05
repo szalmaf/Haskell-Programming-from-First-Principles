@@ -177,6 +177,18 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
 instance (Eq a, Eq b) => EqProp (Two a b) where
   (=-=) = eq
 
+data Three a b c = Three a b c deriving (Eq, Show)
+instance Functor (Three a b) where
+  fmap f (Three x y z) = Three x y (f z)
+instance (Monoid a, Monoid b) => Applicative (Three a b) where
+  pure x = Three mempty mempty x
+  (Three x y f) <*> (Three z1 z2 z3) = 
+          Three (mappend x z1) (mappend y z2) (f z3)
+instance (Arbitrary a, Arbitrary b, Arbitrary c) =>
+      Arbitrary (Three a b c) where
+  arbitrary = Three <$> arbitrary <*> arbitrary <*> arbitrary
+instance (Eq a, Eq b, Eq c) => EqProp (Three a b c) where
+  (=-=) = eq
 
 main :: IO ()
 main = do
@@ -184,5 +196,6 @@ main = do
   quickBatch $ applicative (undefined :: Validation  String (Int, Double, Char))
   quickBatch $ applicative (undefined :: Pair (Int, Double, String))
   quickBatch $ applicative (undefined :: Two String (Int, Double, String))
+  quickBatch $ applicative (undefined :: Three String String (Int, Double, String))
 
   return ()
