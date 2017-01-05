@@ -190,6 +190,18 @@ instance (Arbitrary a, Arbitrary b, Arbitrary c) =>
 instance (Eq a, Eq b, Eq c) => EqProp (Three a b c) where
   (=-=) = eq
 
+data Three' a b = Three' a b b deriving (Eq, Show)
+instance Functor (Three' a) where
+  fmap f (Three' x y z) = Three' x (f y) (f z)
+instance Monoid a => Applicative (Three' a) where
+  pure x = Three' mempty x x -- Is this x x correct???
+  (Three' x f g) <*> (Three' z1 z2 z3) = Three' (mappend x z1) (f z2) (g z3)
+instance( Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
+  arbitrary = Three' <$> arbitrary <*> arbitrary <*> arbitrary
+instance (Eq a, Eq b) => EqProp (Three' a b) where
+  (=-=) = eq
+
+
 main :: IO ()
 main = do
 
@@ -197,5 +209,6 @@ main = do
   quickBatch $ applicative (undefined :: Pair (Int, Double, String))
   quickBatch $ applicative (undefined :: Two String (Int, Double, String))
   quickBatch $ applicative (undefined :: Three String String (Int, Double, String))
+  quickBatch $ applicative (undefined :: Three' String (Int, Double, String))
 
   return ()
