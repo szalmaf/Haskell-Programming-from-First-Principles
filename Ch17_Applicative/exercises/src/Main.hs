@@ -133,6 +133,26 @@ instance (Eq e, Eq a) => EqProp (Validation e a) where
 -- quickBatch  $ applicative (undefined :: Validation  String (Int, Double, Char))
 -- See also: http://stackoverflow.com/questions/36009335/how-do-i-test-this-applicative-instance-with-checkers-no-instance-for-coarbitr
 
+-- Chapter exercises
+
+-- Specialize Applicative functions pure and (<*>)
+-- pure :: Applicative f => a -> f a
+-- (<*>) :: Applicative f => f (a -> b) -> f a -> f b
+
+-- pure :: a -> [] a
+-- (<*>) :: [] (a -> b) -> [] a -> [] b
+
+-- pure :: a -> IO a
+-- (<*>) :: IO (a -> b) -> IO a -> IO b
+
+-- Need the monoid restriction on the first variable 'a'
+-- pure :: Monoid a => a -> (,) a a
+-- (<*>) :: Monoid a => (,) a (a -> b) -> (,) a a -> (,) a b
+
+-- No need for monoid restriction; but use 'e' as first type variable
+-- pure :: a -> (->) e a
+-- (<*>) :: (->) a (a -> b) -> (->) a a -> (->) a b
+
 
 
 main :: IO ()
