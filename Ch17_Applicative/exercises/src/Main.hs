@@ -153,9 +153,23 @@ instance (Eq e, Eq a) => EqProp (Validation e a) where
 -- pure :: a -> (->) e a
 -- (<*>) :: (->) a (a -> b) -> (->) a a -> (->) a b
 
+-- Write applicative instances for the following datatypes:
 
+data Pair a = Pair a a deriving (Eq, Show)
+instance Functor Pair where
+  fmap f (Pair x y) = Pair (f x) (f y)
+instance Applicative Pair where
+  pure x = Pair x x -- :: Monoid a =>  a -> Pair a
+  (Pair f g) <*> (Pair x y) = Pair (f x) (g y) 
+instance Arbitrary a => Arbitrary (Pair a) where
+  arbitrary = Pair <$> arbitrary <*> arbitrary
+instance Eq a => EqProp (Pair a) where
+  (=-=) = eq
 
 main :: IO ()
 main = do
+
+  quickBatch  $ applicative (undefined :: Validation  String (Int, Double, Char))
+  quickBatch $ applicative (undefined :: Pair (Int, Double, String))
 
   return ()
