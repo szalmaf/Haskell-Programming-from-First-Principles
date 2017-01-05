@@ -131,6 +131,9 @@ instance (Arbitrary e, Arbitrary a) => Arbitrary (Validation e a) where
   -- I dont know how to do the above arbitrary w/ elements
 instance (Eq e, Eq a) => EqProp (Validation e a) where 
   (=-=) = eq 
+-- quickBatch  $ applicative (undefined :: Validation  String (Int, Double, Char))
+
+
 main :: IO ()
 main = do
 
