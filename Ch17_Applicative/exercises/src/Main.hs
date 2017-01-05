@@ -107,13 +107,25 @@ instance Applicative ZipList' where
   ZipList' (Cons f fs) <*> ZipList' (Cons x xs) =
         ZipList' (Cons (f x) (fs'xs)) where
           ZipList' fs'xs = ZipList' fs <*> ZipList' xs
-toMyList = foldr Cons Nil
+-- toMyList = foldr Cons Nil
 -- z = ZipList' $ toMyList  [(+9), (*2), (+8)]
 -- z' = ZipList' $ toMyList  [1..3]
 -- z <*> z'
 
-
-
+-- Variation on Either exercise: Validation
+data Validation e a =
+    Failure' e
+  | Success' a
+  deriving (Eq, Show)
+instance Functor (Validation e) where
+  fmap f (Success' x)  = Success' (f x) 
+  fmap _ (Failure' x)  = Failure' x -- Failure' x' case
+instance Monoid e => Applicative (Validation e) where
+  pure x = Success' x -- ??????
+  (Success' f) <*> (Success' x) = Success' (f x) -- functorial?!
+  (Success' x) <*> (Failure' y) = Failure' y
+  (Failure' x) <*> (Success' y) = Failure' x
+  (Failure' x) <*> (Failure' y) = Failure' (mappend x y) -- monoidal!!!
 
 
 
