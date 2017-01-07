@@ -196,11 +196,34 @@ instance Functor (Three' a) where
 instance Monoid a => Applicative (Three' a) where
   pure x = Three' mempty x x -- Is this x x correct???
   (Three' x f g) <*> (Three' z1 z2 z3) = Three' (mappend x z1) (f z2) (g z3)
-instance( Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
   arbitrary = Three' <$> arbitrary <*> arbitrary <*> arbitrary
 instance (Eq a, Eq b) => EqProp (Three' a b) where
   (=-=) = eq
 
+data Four a b c d = Four a b c d deriving (Eq, Show)
+instance Functor (Four a b c) where
+  fmap f (Four x1 x2 x3 x) = Four x1 x2 x3 (f x) 
+instance (Monoid a, Monoid b, Monoid c) => Applicative (Four a b c) where
+  pure x = Four mempty mempty mempty x
+  (Four x1 x2 x3 f) <*> (Four y1 y2 y3 y) = 
+        Four (mappend x1 y1) (mappend x2 y2) (mappend x3 y3) (f y)
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => Arbitrary (Four a b c d) where
+  arbitrary = Four <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
+instance (Eq a, Eq b, Eq c, Eq d) => EqProp (Four a b c d) where
+  (=-=) = eq
+
+data Four' a b = Four' a a a b deriving (Eq, Show)
+instance Functor (Four' a) where
+  fmap f (Four' x1 x2 x3 x) = Four' x1 x2 x3 (f x)
+instance Monoid a => Applicative (Four' a) where
+  pure x = Four' mempty mempty mempty x
+  (Four' x1 x2 x3 f) <*> (Four' y1 y2 y3 y) = 
+        Four' (mappend x1 y1) (mappend x2 y2) (mappend x3 y3) (f y)
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
+  arbitrary = Four' <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
+instance (Eq a, Eq b) => EqProp (Four' a b) where
+  (=-=) = eq
 
 main :: IO ()
 main = do
@@ -210,5 +233,7 @@ main = do
   quickBatch $ applicative (undefined :: Two String (Int, Double, String))
   quickBatch $ applicative (undefined :: Three String String (Int, Double, String))
   quickBatch $ applicative (undefined :: Three' String (Int, Double, String))
+  quickBatch $ applicative (undefined :: Four [Int] String [Int] (Int, Double, String))
+  quickBatch $ applicative (undefined :: Four' [Int] (Int, Double, String))
 
   return ()

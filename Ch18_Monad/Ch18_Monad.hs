@@ -1,3 +1,5 @@
+import Control.Monad (join)
+
 -- class Applicative m => Monad m where 
 --     (>>=)  :: m a -> (a -> m b) -> m b -- "bind"
 --     (>>)   :: m a -> m b -> m b        -- "do sequencing"
@@ -11,7 +13,7 @@
 -- 
 -- Functor -> Applicative -> Monad
 
---fmap' f xs = xs >>= return .f
+--fmap' f xs = xs >>= return . f
 
 -- fmap (+1) [1..3]
 -- [1..3] >>= return . (+1)
@@ -111,20 +113,20 @@ doSomething' n = do
     a <- f n
     b <- g a
     c <- h b
-    pure (a, b, c)
+    return (a, b, c)
 
 -- Exercise: Implement Either Monad
 data Sum a b =
       First a 
     | Second b
     deriving (Eq, Show)
-instance Functor (Sum a) where
-    fmap f xs = 
+-- instance Functor (Sum a) where
+--     fmap f xs = 
 
-instance Applicative (Sum a) where
-    pure  =
-    (<*>) =
+-- instance Applicative (Sum a) where
+--     pure  =
+--     (<*>) =
 
-instance Monad (Sum a) where
-    return = pure
-    (>>=) = 
+-- instance Monad (Sum a) where
+--     return = pure
+--     (>>=) = 
