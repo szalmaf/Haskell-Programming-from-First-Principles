@@ -88,6 +88,6 @@ app rConn = do -- connect to Redis db
 
 main :: IO ()
 main = do
-  rConn <- R.connect R.defaultConnectInfo
-  scotty 3000 (app rConn)
+  rConn <- R.connect R.defaultConnectInfo -- connect to db
+  scotty 3000 (app rConn) -- listen to port 3000 and apply app
 
