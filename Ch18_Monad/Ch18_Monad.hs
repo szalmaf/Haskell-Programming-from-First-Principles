@@ -20,7 +20,7 @@ import Control.Monad (join)
 
 -- The novel part of monad
 bind' :: Monad m => (a -> m b) -> m a -> m b
-bind' f xs = join $ fmap f xs 
+bind' f xs = join $ fmap f xs -- where f is a special: (a -> m b) type function!!
 
 -- Monad lifting functions
 -- liftM2 (,) (Just 3) (Just 5)
@@ -173,12 +173,19 @@ data Sum a b =
       First a 
     | Second b
     deriving (Eq, Show)
--- instance Functor (Sum a) where
---     fmap f xs = 
-
--- instance Applicative (Sum a) where
---     pure  =
---     (<*>) =
+instance Functor (Sum a) where
+    fmap f (Second x) = Second (f x)
+    fmap _ (First x)  = First x -- First 
+instance Monoid a => Applicative (Sum a) where -- well, if I define a as monoid!
+    pure x = Second x
+    (First x)  <*> (First y)  = First (mappend x y)
+    (Second x) <*> (First y)  = First y
+    (First x)  <*> (Second y) = First x
+    (Second f) <*> (Second y) = Second (f y)
+instance Monoid a => Monad (Sum a) where
+    return x = Second x
+    (Second x) >>= f  = (f x)
+    (First x)  >>= f  = First x
 
 -- instance Monad (Sum a) where
 --     return = pure
