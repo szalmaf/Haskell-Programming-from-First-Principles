@@ -1,5 +1,9 @@
 import Control.Monad (join)
 
+-- import Test.QuickCheck
+-- import Test.QuickCheck.Checkers
+-- import Test.QuickCheck.Classes
+
 -- class Applicative m => Monad m where 
 --     (>>=)  :: m a -> (a -> m b) -> m b -- "bind"
 --     (>>)   :: m a -> m b -> m b        -- "do sequencing"
@@ -178,15 +182,28 @@ instance Functor (Sum a) where
     fmap _ (First x)  = First x -- First 
 instance Monoid a => Applicative (Sum a) where -- well, if I define a as monoid!
     pure y = Second y
-    (First x1)  <*> (First x2)  = First (mappend x1 x2)
+    (First x1)  <*> (First x2) = First (mappend x1 x2)
     (Second y)  <*> (First x)  = First x
-    (First x)  <*> (Second y) = First x
-    (Second f) <*> (Second y) = Second (f y)
+    (First x)   <*> (Second y) = First x
+    (Second f)  <*> (Second y) = Second (f y)
 instance Monoid a => Monad (Sum a) where
     return = pure
     (Second y) >>= f  = (f y) -- f is (a -> m(!!) b)
     (First x)  >>= f  = First x -- Is this needed for First?
 
--- instance Monad (Sum a) where
---     return = pure
---     (>>=) = 
+
+
+
+-- Chapter exercises
+
+-- 1.
+data Nope a =
+    NopeDotJpg
+instance Functor Nope where
+    fmap f NopeDotJpg = NopeDotJpg
+instance Applicative Nope where
+    pure _ = NopeDotJpg
+    _ <*> _ = NopeDotJpg
+instance Monad Nope where
+    return = pure
+    _ >>= _ = NopeDotJpg
