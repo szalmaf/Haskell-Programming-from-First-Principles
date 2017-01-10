@@ -174,18 +174,18 @@ data Sum a b =
     | Second b
     deriving (Eq, Show)
 instance Functor (Sum a) where
-    fmap f (Second x) = Second (f x)
+    fmap f (Second y) = Second (f y)
     fmap _ (First x)  = First x -- First 
 instance Monoid a => Applicative (Sum a) where -- well, if I define a as monoid!
-    pure x = Second x
-    (First x)  <*> (First y)  = First (mappend x y)
-    (Second x) <*> (First y)  = First y
+    pure y = Second y
+    (First x1)  <*> (First x2)  = First (mappend x1 x2)
+    (Second y)  <*> (First x)  = First x
     (First x)  <*> (Second y) = First x
     (Second f) <*> (Second y) = Second (f y)
 instance Monoid a => Monad (Sum a) where
     return = pure
-    (Second x) >>= f  = (f x) -- f is (a -> m(!!) b)
-    (First x)  >>= f  = First x
+    (Second y) >>= f  = (f y) -- f is (a -> m(!!) b)
+    (First x)  >>= f  = First x -- Is this needed for First?
 
 -- instance Monad (Sum a) where
 --     return = pure
