@@ -183,8 +183,8 @@ instance Monoid a => Applicative (Sum a) where -- well, if I define a as monoid!
     (First x)  <*> (Second y) = First x
     (Second f) <*> (Second y) = Second (f y)
 instance Monoid a => Monad (Sum a) where
-    return x = Second x
-    (Second x) >>= f  = (f x)
+    return = pure
+    (Second x) >>= f  = (f x) -- f is (a -> m(!!) b)
     (First x)  >>= f  = First x
 
 -- instance Monad (Sum a) where
