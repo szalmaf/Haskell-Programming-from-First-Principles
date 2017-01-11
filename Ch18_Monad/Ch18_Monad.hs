@@ -253,3 +253,19 @@ instance Monad List' where
     return x = Cons x Nil
     (Cons x xs) >>= f = Cons x' (xs >>= f)
         where Cons x' Nil = f x
+
+-- 1.
+j :: Monad m => m (m a) -> m a
+j x = x >>= id -- Crazy !!!
+
+-- 2.
+l1 :: Monad m => (a -> b) -> m a -> m b
+l1 = fmap
+
+-- 3.
+l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
+l2 f x y = fmap (fmap fn2 x) y
+    where fn1 y = f x y
+          fn2 x = f x y
+
+
