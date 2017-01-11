@@ -207,3 +207,49 @@ instance Applicative Nope where
 instance Monad Nope where
     return = pure
     _ >>= _ = NopeDotJpg
+
+-- 2.
+data PhhhbbtttEither b a =
+      Left' a
+    | Right' b
+instance Functor (PhhhbbtttEither b) where
+    fmap f (Left' y)  = Left' (f y)
+    fmap _ (Right' x) = Right' x 
+instance Monoid b => Applicative (PhhhbbtttEither b) where
+    pure y = Left' y
+    Left' f   <*> Left' y   = Left' (f y)
+    Left' y   <*> Right' x  = Right' x
+    Right' x  <*> Left' y   = Right' x
+    Right' x1 <*> Right' x2 = Right' (mappend x1 x2)
+instance Monoid b => Monad (PhhhbbtttEither b) where
+    return = pure
+    Left' y  >>= f = f y
+    Right' x >>= f = Right' x      
+
+-- 3.
+newtype Identity a = Identity a deriving (Eq, Ord, Show)
+instance Functor Identity where
+    fmap f (Identity x) = Identity (f x)
+instance Applicative Identity where
+    pure x = Identity x
+    Identity f <*> Identity x = Identity (f x) 
+instance Monad Identity where
+    return = pure
+    Identity x >>= f = f x
+
+-- 4.
+data List' a =
+      Nil
+    | Cons a (List' a)
+instance Functor List' where
+    fmap f Nil = Nil
+    fmap f (Cons x xs) = Cons (f x) (fmap f xs)
+instance Applicative List' where
+    pure x = Cons x Nil
+    Nil <*> x   = Nil
+    f <*> Nil   = Nil
+    Cons f fs <*> Cons x xs = Cons (f x) (Cons f fs <*> xs) -- simpler solution than in Appl Chapter
+instance Monad List' where
+    return x = Cons x Nil
+    (Cons x xs) >>= f = Cons x' (xs >>= f)
+        where Cons x' Nil = f x
