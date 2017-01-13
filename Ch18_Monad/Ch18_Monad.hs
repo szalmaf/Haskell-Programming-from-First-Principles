@@ -264,9 +264,12 @@ l1 = fmap
 
 -- 3.
 l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
-l2 f x y = fmap (fmap fn2 x) y
-    where fn1 y = f x y
-          fn2 x = f x y
+l2 f x y = (fmap f x >>= (\f -> fmap f y)) -- can flip be used on rhs here?
+-- lhs of >>= puts f x partial fn(s) inside m to become m fp
+-- while the rhs of >>= takes these partial fn(s) and apply them
+-- to each b in m b to get m c
 -- l2 (,) [1,2][3, 6]
 -- [(1,3),(1,6),(2,3),(2,6)]
+-- l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
+-- l2 f x y = (fmap f x) <*> y
 
