@@ -273,3 +273,6 @@ l2 f x y = (fmap f x >>= (\f -> fmap f y)) -- can flip be used on rhs here?
 -- l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
 -- l2 f x y = (fmap f x) <*> y
 
+-- 4.
+a :: Monad m => m a -> m (a -> b) -> m b
+a xs fs = fs >>= (\f -> fmap f xs)
