@@ -267,5 +267,6 @@ l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
 l2 f x y = fmap (fmap fn2 x) y
     where fn1 y = f x y
           fn2 x = f x y
-
+-- l2 (,) [1,2][3, 6]
+-- [(1,3),(1,6),(2,3),(2,6)]
 
