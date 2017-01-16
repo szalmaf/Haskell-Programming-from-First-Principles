@@ -3,6 +3,7 @@
 module Main where
 
 import Data.List (elemIndex)
+import Control.Applicative (liftA3)
 import BadMonoid
 import Test.QuickCheck
 import Test.QuickCheck.Checkers
@@ -225,6 +226,19 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
 instance (Eq a, Eq b) => EqProp (Four' a b) where
   (=-=) = eq
 
+
+-- Combinations
+stops :: String
+stops = "pbtdkg"
+
+vowels :: String
+vowels = "aeiou"
+
+combos :: [a] -> [b] -> [c] -> [(a,b,c)]
+combos xs ys zs = (,,) <$> xs <*> ys <*> zs
+
+
+
 main :: IO ()
 main = do
 
@@ -235,5 +249,7 @@ main = do
   quickBatch $ applicative (undefined :: Three' String (Int, Double, String))
   quickBatch $ applicative (undefined :: Four [Int] String [Int] (Int, Double, String))
   quickBatch $ applicative (undefined :: Four' [Int] (Int, Double, String))
+
+
 
   return ()

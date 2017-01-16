@@ -281,6 +281,10 @@ a xs fs = fs >>= (\f -> fmap f xs)
 meh :: Monad m => [a] -> (a -> m b) -> m [b]
 meh x:xs f = (fmap f (return [x])) : (meh xs f)
 meh (x:xs) f = (return x >>= f) : (meh xs f)
+meh (x:xs) f = (return x >>= (\x -> (f x) : (meh xs f)))
+meh (x:xs) f = (return x >>= (\x -> (f (x : (meh xs f)))))
+meh (x:xs) f = (return x >>= (\x -> f x)) : (meh xs f); meh [] _ = []
+
 
 
 
