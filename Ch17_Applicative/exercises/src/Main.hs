@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+--{-# LANGUAGE ApplicativeDo #-}
 
 module Main where
 
@@ -55,7 +56,7 @@ instance Functor (Constant a) where
   fmap f (Constant x) = Constant x
 instance Monoid a => Applicative (Constant a) where
   pure x = Constant mempty -- This is a tricky one!!!
-  (<*>) (Constant f) (Constant x) = Constant x
+  (<*>) (Constant x) (Constant y) = Constant (x <> y)
 
 -- Maybe applicative
 a = const <$> Just "Hello" <*> (pure "World" :: Maybe String)
