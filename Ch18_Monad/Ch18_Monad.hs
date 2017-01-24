@@ -224,7 +224,7 @@ instance Monoid b => Applicative (PhhhbbtttEither b) where
 instance Monoid b => Monad (PhhhbbtttEither b) where
     return = pure
     Left' y  >>= f = f y
-    Right' x >>= f = Right' x      
+    Right' x >>= _ = Right' x      
 
 -- 3.
 newtype Identity a = Identity a deriving (Eq, Ord, Show)
