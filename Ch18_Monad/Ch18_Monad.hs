@@ -251,6 +251,7 @@ instance Applicative List' where
     Cons f fs <*> Cons x xs = Cons (f x) (Cons f fs <*> xs) -- simpler solution than in Appl Chapter
 instance Monad List' where
     return x = Cons x Nil
+--    (Cons x xs) >>= f = f x `mappend` (xs >>= f)
     (Cons x xs) >>= f = Cons x' (xs >>= f)
         where Cons x' Nil = f x
 
@@ -261,6 +262,8 @@ j x = x >>= id -- Crazy !!!
 -- 2.
 l1 :: Monad m => (a -> b) -> m a -> m b
 l1 = fmap
+-- l1 f ma = ma >>= return f
+-- l1 f = flip (>>=) (return . f)
 
 -- 3.
 l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
@@ -272,19 +275,41 @@ l2 f x y = (fmap f x >>= (\f -> fmap f y)) -- can flip be used on rhs here?
 -- [(1,3),(1,6),(2,3),(2,6)]
 -- l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
 -- l2 f x y = (fmap f x) <*> y
+--l2 fa a b = l1 fa a >= \fb -> l1 fb b
+--l2 f ma mb = ma >>= \a -> mb >>= \b -> return $ f a b
 
 -- 4.
 a :: Monad m => m a -> m (a -> b) -> m b
 a xs fs = fs >>= (\f -> fmap f xs)
+-- a' m n = do
+--     m >>= \a' ->
+--     n >>= \f ->
+--     return f a'
 
 -- 5.
-meh :: Monad m => [a] -> (a -> m b) -> m [b]
-meh x:xs f = (fmap f (return [x])) : (meh xs f)
-meh (x:xs) f = (return x >>= f) : (meh xs f)
-meh (x:xs) f = (return x >>= (\x -> (f x) : (meh xs f)))
-meh (x:xs) f = (return x >>= (\x -> (f (x : (meh xs f)))))
-meh (x:xs) f = (return x >>= (\x -> f x)) : (meh xs f); meh [] _ = []
+-- meh :: Monad m => [a] -> (a -> m b) -> m [b]
+-- meh x:xs f = (fmap f (return [x])) : (meh xs f)
+-- meh (x:xs) f = (return x >>= f) : (meh xs f)
+-- meh (x:xs) f = (return x >>= (\x -> (f x) : (meh xs f)))
+-- meh (x:xs) f = (return x >>= (\x -> (f (x : (meh xs f)))))
+-- meh (x:xs) f = (return x >>= (\x -> f x)) : (meh xs f); meh [] _ = []
 
+meh' xs f = foldr cons (pure []) xs
+    where cons x ys = (:) <$> f x <*> ys
+--    where cons x ys = fmap (:) (f x) <*> ys
 
+meh'' :: Monad m => [a] -> (a -> m b) -> m [b]
+meh'' [] _ = return []
+meh'' (x:xs) f = f x >>= flip cons (meh'' xs f)
+    where cons x m = m >>= return . (:) x
 
+meh''' :: Monad m => [a] -> (a -> m b) -> m [b]
+meh''' [] _ = return []
+meh''' (a:as) f = do
+    b <- f a
+    bs <- meh''' as f
+    return $ b : bs
 
+flipType :: Monad m => [m a] -> m [a]
+flipType xs = meh' xs id
+-- flipType = flip meh id
