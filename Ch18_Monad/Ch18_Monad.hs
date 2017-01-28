@@ -294,19 +294,21 @@ a xs fs = fs >>= (\f -> fmap f xs)
 -- meh (x:xs) f = (return x >>= (\x -> (f (x : (meh xs f)))))
 -- meh (x:xs) f = (return x >>= (\x -> f x)) : (meh xs f); meh [] _ = []
 
-meh' xs f = foldr cons (pure []) xs
-    where cons x ys = (:) <$> f x <*> ys
+meh' :: Monad m => [a] -> (a -> m b) -> m [b]
+meh' xs f = foldr cons (return []) xs
+    where cons x ys = (:) <$> f x <*> ys -- does (:) inside m structure
 --    where cons x ys = fmap (:) (f x) <*> ys
 
 meh'' :: Monad m => [a] -> (a -> m b) -> m [b]
 meh'' [] _ = return []
-meh'' (x:xs) f = f x >>= flip cons (meh'' xs f)
-    where cons x m = m >>= return . (:) x
+meh'' (x:xs) f = f x >>= \a -> ((meh'' xs f) >>= return . (:) a)
+-- meh'' (x:xs) f = f x >>= cons (meh'' xs f)
+--     where cons m x = m >>= return . (:) x
 
 meh''' :: Monad m => [a] -> (a -> m b) -> m [b]
 meh''' [] _ = return []
 meh''' (a:as) f = do
-    b <- f a
+    b <- f a -- Though f a is m b type, b here is the variable inside the m structure
     bs <- meh''' as f
     return $ b : bs
 
